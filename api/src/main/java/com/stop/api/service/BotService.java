@@ -70,4 +70,23 @@ public class BotService {
     return botDto;
   }
 
+  /**
+   * Update an existing bot.
+   * 
+   * @param req bot to update
+   * @return
+   */
+  public BotDto updateBot(BotDto req) {
+    Bot bot = botRepository.findById(req.getId()).get();
+    bot.setName(req.getName());
+    bot.setDescription(req.getDescription());
+    bot.setShowTo(req.getShowTo());
+    bot.getBotAddress().setIp(req.getIp());
+    bot.getBotAddress().setPort(req.getPort());
+    bot.getBotAddress().setApiPath(req.getPath());
+    botAddressRepository.save(bot.getBotAddress());
+    Bot updated = botRepository.save(bot);
+    return convertBotToDto(updated);
+  }
+
 }

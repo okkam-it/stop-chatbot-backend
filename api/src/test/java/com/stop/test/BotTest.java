@@ -10,6 +10,8 @@ import org.junit.Test;
 
 public class BotTest extends BaseRepositoryTest {
 
+  private static final int EDIT_PORT = 5001;
+
   @Test
   public void getBots() {
     List<Bot> bots = botRepository.findAll();
@@ -37,6 +39,14 @@ public class BotTest extends BaseRepositoryTest {
     Optional<Bot> bot = botRepository.findById(2L);
     botAddress.setBot(bot.get());
     botAddressRepository.save(botAddress);
+  }
+
+  public void updateBotAddress() {
+    Bot bot = botRepository.findById(2L).get();
+    BotAddress address = botAddressRepository.findOneByBot(bot);
+    address.setPort(EDIT_PORT);
+    BotAddress updated = botAddressRepository.save(address);
+    Assert.assertEquals(EDIT_PORT, updated.getPort());
   }
 
 }

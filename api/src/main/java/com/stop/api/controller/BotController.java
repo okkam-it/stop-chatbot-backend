@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,6 +30,14 @@ public class BotController {
     BotDto resp = botService.createBot(req);
     return ResponseEntity.created(ResponseUtils.getCreationUri(httpReq, resp.getId())).body(resp);
   }
+
+  @PutMapping
+  @ResponseBody
+  public ResponseEntity<BotDto> updateBot(HttpServletRequest httpReq, @RequestBody BotDto req) {
+    BotDto resp = botService.updateBot(req);
+    return ResponseEntity.created(ResponseUtils.getCreationUri(httpReq, resp.getId())).body(resp);
+  }
+
 
   // GET ALL
   @GetMapping
