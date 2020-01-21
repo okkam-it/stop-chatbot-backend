@@ -26,7 +26,7 @@ spring:
     password: sa
     platform: mysql
     testWhileIdle: true
-    url: jdbc:h2:file:C:/tmp/stop-backend;AUTO_SERVER=true
+    url: jdbc:h2:file:/tmp/stop-backend;AUTO_SERVER=true
     username: sa
     validationQuery: SELECT 1
   http:
