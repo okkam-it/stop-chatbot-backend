@@ -1,13 +1,16 @@
 package com.stop.api.service;
 
+import com.stop.dto.BotAddressDto;
 import com.stop.dto.BotDto;
 import com.stop.model.Bot;
 import com.stop.model.BotAddress;
 import com.stop.repository.BotAddressRepository;
 import com.stop.repository.BotRepository;
+import com.stop.response.GenericResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +37,9 @@ public class BotService {
     bot.setShowTo(req.getShowTo());
 
     BotAddress botAddress = new BotAddress();
-    botAddress.setIp(req.getIp());
-    botAddress.setPort(req.getPort());
-    botAddress.setApiPath(req.getPath());
+    botAddress.setIp(req.getAddress().getIp());
+    botAddress.setPort(req.getAddress().getPort());
+    botAddress.setApiPath(req.getAddress().getPath());
     Bot saved = botRepository.save(bot);
     saved.setBotAddress(botAddress);
     botAddress.setBot(saved);
@@ -63,9 +66,11 @@ public class BotService {
     botDto.setId(bot.getId());
     botDto.setName(bot.getName());
     botDto.setDescription(bot.getDescription());
-    botDto.setIp(bot.getBotAddress().getIp());
-    botDto.setPort(bot.getBotAddress().getPort());
-    botDto.setPath(bot.getBotAddress().getApiPath());
+    BotAddressDto botAddressDto = new BotAddressDto();
+    botAddressDto.setIp(bot.getBotAddress().getIp());
+    botAddressDto.setPort(bot.getBotAddress().getPort());
+    botAddressDto.setPath(bot.getBotAddress().getApiPath());
+    botDto.setAddress(botAddressDto);
     botDto.setShowTo(bot.getShowTo());
     return botDto;
   }
@@ -81,12 +86,32 @@ public class BotService {
     bot.setName(req.getName());
     bot.setDescription(req.getDescription());
     bot.setShowTo(req.getShowTo());
-    bot.getBotAddress().setIp(req.getIp());
-    bot.getBotAddress().setPort(req.getPort());
-    bot.getBotAddress().setApiPath(req.getPath());
+    bot.getBotAddress().setIp(req.getAddress().getIp());
+    bot.getBotAddress().setPort(req.getAddress().getPort());
+    bot.getBotAddress().setApiPath(req.getAddress().getPath());
     botAddressRepository.save(bot.getBotAddress());
     Bot updated = botRepository.save(bot);
     return convertBotToDto(updated);
+  }
+
+  /**
+   * Delete a bot.
+   * 
+   * @param id bot id to delete
+   * @return OK if bot was successfully deleted
+   */
+  @Transactional
+  public GenericResponse delete(Long id) {
+    GenericResponse response = new GenericResponse();
+    Bot bot = botRepository.findById(id).get();
+    if (bot == null) {
+      response.setMessage("KO");
+      return response;
+    }
+    botAddressRepository.deleteByBot(bot);
+    botRepository.deleteById(id);
+    response.setMessage("OK");
+    return response;
   }
 
 }

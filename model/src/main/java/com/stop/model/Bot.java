@@ -25,7 +25,7 @@ public class Bot extends AbstractStopResource {
   private Set<Branch> branches;
 
   @OneToMany(mappedBy = "bot", cascade = CascadeType.ALL)
-  private List<ChatRoom> chatroom;
+  private List<ChatRoom> chatRoom;
 
   public boolean isAvailable() {
     return available;
@@ -75,12 +75,12 @@ public class Bot extends AbstractStopResource {
     this.branches = branches;
   }
 
-  public List<ChatRoom> getChatroom() {
-    return chatroom;
+  public List<ChatRoom> getChatRoom() {
+    return chatRoom;
   }
 
-  public void setChatroom(List<ChatRoom> chatroom) {
-    this.chatroom = chatroom;
+  public void setChatRoom(List<ChatRoom> chatRoom) {
+    this.chatRoom = chatRoom;
   }
 
 }

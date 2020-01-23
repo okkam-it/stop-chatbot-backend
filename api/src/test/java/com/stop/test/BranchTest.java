@@ -20,7 +20,7 @@ public class BranchTest extends BaseRepositoryTest {
   @Test
   public void addBotToBranch() {
     Bot bot = botRepository.findById(2L).get();
-    Branch branch = branchRepository.findById(3L).get();
+    Branch branch = branchRepository.findById(4L).get();
     branch.getBots().add(bot);
     Branch botAdded = branchRepository.save(branch);
     Assert.assertEquals(1, botAdded.getBots().size());

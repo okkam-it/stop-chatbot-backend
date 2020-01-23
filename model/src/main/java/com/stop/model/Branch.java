@@ -15,13 +15,14 @@ import javax.persistence.Table;
 public class Branch extends AbstractStopResource {
 
   private String name;
+  private String code;
   @ManyToMany
   private Set<User> users = new HashSet<>();
   @ManyToMany
   private Set<Bot> bots = new HashSet<>();
 
   @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL)
-  private List<ChatRoom> chatroom = new ArrayList<>();
+  private List<ChatRoom> chatRoom = new ArrayList<>();
 
   public String getName() {
     return name;
@@ -47,12 +48,20 @@ public class Branch extends AbstractStopResource {
     this.bots = bots;
   }
 
-  public List<ChatRoom> getChatroom() {
-    return chatroom;
+  public List<ChatRoom> getChatRoom() {
+    return chatRoom;
   }
 
-  public void setChatroom(List<ChatRoom> chatroom) {
-    this.chatroom = chatroom;
+  public void setChatRoom(List<ChatRoom> chatRoom) {
+    this.chatRoom = chatRoom;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
   }
 
 }

@@ -21,7 +21,7 @@ public class User extends AbstractStopResource {
   private Set<Branch> branches = new HashSet<>();
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-  private List<ChatRoom> chatroom = new ArrayList<>();
+  private List<ChatRoom> chatRoom = new ArrayList<>();
 
   public String getName() {
     return name;
@@ -47,12 +47,12 @@ public class User extends AbstractStopResource {
     this.branches = branches;
   }
 
-  public List<ChatRoom> getChatroom() {
-    return chatroom;
+  public List<ChatRoom> getChatRoom() {
+    return chatRoom;
   }
 
-  public void setChatroom(List<ChatRoom> chatroom) {
-    this.chatroom = chatroom;
+  public void setChatRoom(List<ChatRoom> chatRoom) {
+    this.chatRoom = chatRoom;
   }
 
 }

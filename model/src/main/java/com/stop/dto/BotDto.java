@@ -5,10 +5,8 @@ public class BotDto {
   private Long id;
   private String name;
   private String description;
-  private String ip;
-  private int port;
-  private String path;
   private String showTo;
+  private BotAddressDto address;
 
   public Long getId() {
     return id;
@@ -26,30 +24,6 @@ public class BotDto {
     this.name = name;
   }
 
-  public String getIp() {
-    return ip;
-  }
-
-  public void setIp(String ip) {
-    this.ip = ip;
-  }
-
-  public int getPort() {
-    return port;
-  }
-
-  public void setPort(int port) {
-    this.port = port;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
-
   public String getShowTo() {
     return showTo;
   }
@@ -64,5 +38,13 @@ public class BotDto {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public BotAddressDto getAddress() {
+    return address;
+  }
+
+  public void setAddress(BotAddressDto address) {
+    this.address = address;
   }
 }

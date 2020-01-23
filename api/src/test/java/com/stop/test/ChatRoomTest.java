@@ -16,7 +16,7 @@ public class ChatRoomTest extends BaseRepositoryTest {
   public void createChatroom() {
     User user = userRepository.findById(1L).get();
     Bot bot = botRepository.findById(2L).get();
-    Branch branch = branchRepository.findById(3L).get();
+    Branch branch = branchRepository.findById(4L).get();
     ChatRoom chatRoom = new ChatRoom();
     chatRoom.setBot(bot);
     chatRoom.setBranch(branch);
