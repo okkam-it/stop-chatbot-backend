@@ -10,6 +10,7 @@ import com.stop.response.GenericResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,17 +82,23 @@ public class BotService {
    * @param req bot to update
    * @return
    */
-  public BotDto updateBot(BotDto req) {
-    Bot bot = botRepository.findById(req.getId()).get();
-    bot.setName(req.getName());
-    bot.setDescription(req.getDescription());
-    bot.setShowTo(req.getShowTo());
-    bot.getBotAddress().setIp(req.getAddress().getIp());
-    bot.getBotAddress().setPort(req.getAddress().getPort());
-    bot.getBotAddress().setApiPath(req.getAddress().getPath());
-    botAddressRepository.save(bot.getBotAddress());
-    Bot updated = botRepository.save(bot);
-    return convertBotToDto(updated);
+  public GenericResponse updateBot(Long id, BotDto req) {
+    GenericResponse response = new GenericResponse();
+    try {
+      Bot bot = botRepository.findById(id).get();
+      bot.setName(req.getName());
+      bot.setDescription(req.getDescription());
+      bot.setShowTo(req.getShowTo());
+      bot.getBotAddress().setIp(req.getAddress().getIp());
+      bot.getBotAddress().setPort(req.getAddress().getPort());
+      bot.getBotAddress().setApiPath(req.getAddress().getPath());
+      botAddressRepository.save(bot.getBotAddress());
+      botRepository.save(bot);
+      response.setMessage("OK");
+    } catch (NoSuchElementException e) {
+      response.setMessage("KO");
+    }
+    return response;
   }
 
   /**

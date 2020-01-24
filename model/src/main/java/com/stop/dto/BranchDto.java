@@ -1,10 +1,14 @@
 package com.stop.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BranchDto {
 
   private Long id;
   private String name;
   private String code;
+  private List<Long> bots = new ArrayList<>();
 
   public Long getId() {
     return id;
@@ -28,6 +32,14 @@ public class BranchDto {
 
   public void setCode(String code) {
     this.code = code;
+  }
+
+  public List<Long> getBots() {
+    return bots;
+  }
+
+  public void setBots(List<Long> bots) {
+    this.bots = bots;
   }
 
 }

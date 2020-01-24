@@ -3,6 +3,7 @@ package com.stop.dto;
 public class UserDto {
 
   private Long id;
+  private String uid;
   private String name;
   private boolean admin;
 
@@ -28,6 +29,14 @@ public class UserDto {
 
   public void setAdmin(boolean admin) {
     this.admin = admin;
+  }
+
+  public String getUid() {
+    return uid;
+  }
+
+  public void setUid(String uid) {
+    this.uid = uid;
   }
 
 }

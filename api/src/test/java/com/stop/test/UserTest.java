@@ -23,4 +23,10 @@ public class UserTest extends BaseRepositoryTest {
     User created = userRepository.save(user);
     Assert.assertTrue(created.getId() > 0);
   }
+
+  @Test
+  public void findByName() {
+    User user = userRepository.findUserByName("admin");
+    Assert.assertNotNull(user);
+  }
 }

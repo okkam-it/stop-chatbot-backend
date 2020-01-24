@@ -14,6 +14,7 @@ import javax.persistence.Table;
 @Table(name = "user")
 public class User extends AbstractStopResource {
 
+  private String uid;
   private String name;
   private boolean admin;
 
@@ -53,6 +54,14 @@ public class User extends AbstractStopResource {
 
   public void setChatRoom(List<ChatRoom> chatRoom) {
     this.chatRoom = chatRoom;
+  }
+
+  public String getUid() {
+    return uid;
+  }
+
+  public void setUid(String uid) {
+    this.uid = uid;
   }
 
 }

@@ -29,6 +29,12 @@ public class BotController {
   @Autowired
   private BotService botService;
 
+  @GetMapping
+  @ResponseBody
+  public List<BotDto> listBots() {
+    return botService.listAllBots();
+  }
+
   @PostMapping
   @ResponseBody
   public ResponseEntity<BotDto> createBot(HttpServletRequest httpReq, @RequestBody BotDto req) {
@@ -38,10 +44,9 @@ public class BotController {
 
   @PutMapping("/{id}")
   @ResponseBody
-  public ResponseEntity<BotDto> updateBot(HttpServletRequest httpReq, @PathVariable Long id,
+  public GenericResponse updateBot(HttpServletRequest httpReq, @PathVariable Long id,
       @RequestBody BotDto req) {
-    BotDto resp = botService.updateBot(req);
-    return ResponseEntity.created(ResponseUtils.getCreationUri(httpReq, resp.getId())).body(resp);
+    return botService.updateBot(id, req);
   }
 
   @DeleteMapping("/{id}")
@@ -49,13 +54,5 @@ public class BotController {
   public GenericResponse deleteBot(@PathVariable Long id) {
     return botService.delete(id);
   }
-
-  @GetMapping
-  @ResponseBody
-  public List<BotDto> listBots() {
-    return botService.listAllBots();
-  }
-
-
 
 }
