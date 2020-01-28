@@ -4,7 +4,8 @@ public class UserDto {
 
   private Long id;
   private String uid;
-  private String name;
+  private String username;
+  private String email;
   private boolean admin;
 
   public Long getId() {
@@ -15,12 +16,12 @@ public class UserDto {
     this.id = id;
   }
 
-  public String getName() {
-    return name;
+  public String getUsername() {
+    return username;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setUsername(String username) {
+    this.username = username;
   }
 
   public boolean isAdmin() {
@@ -37,6 +38,14 @@ public class UserDto {
 
   public void setUid(String uid) {
     this.uid = uid;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 
 }

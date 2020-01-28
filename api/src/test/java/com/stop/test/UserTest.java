@@ -18,7 +18,7 @@ public class UserTest extends BaseRepositoryTest {
   @Test
   public void createUser() {
     User user = new User();
-    user.setName("user");
+    user.setUsername("user");
     user.setAdmin(false);
     user.setCreated(new Date());
     User created = userRepository.save(user);
@@ -27,7 +27,7 @@ public class UserTest extends BaseRepositoryTest {
 
   // TODO fix
   public void findByName() {
-    User user = userRepository.findUserByName("admin");
+    User user = userRepository.findUserByUsername("admin");
     Assert.assertNotNull(user);
   }
 

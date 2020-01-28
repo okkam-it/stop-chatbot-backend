@@ -45,7 +45,7 @@ public abstract class BaseRepositoryTest {
   @PostConstruct
   public void init() {
     User user = new User();
-    user.setName("admin");
+    user.setUsername("admin");
     user.setAdmin(true);
     user.setCreated(new Date());
     userRepository.save(user);

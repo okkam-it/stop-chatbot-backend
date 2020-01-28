@@ -41,7 +41,8 @@ public class UserService {
     UserDto userDto = new UserDto();
     userDto.setId(user.getId());
     userDto.setUid(user.getUid());
-    userDto.setName(user.getName());
+    userDto.setUsername(user.getUsername());
+    userDto.setEmail(user.getEmail());
     userDto.setAdmin(user.isAdmin());
     return userDto;
   }
@@ -53,13 +54,14 @@ public class UserService {
    * @return user created
    */
   public UserDto createUser(UserDto req) {
-    User found = userRepository.findUserByName(req.getName());
+    User found = userRepository.findUserByUsername(req.getUsername());
     if (found == null) {
       User user = new User();
       user.setUid(req.getUid());
       user.setAdmin(req.isAdmin());
       user.setCreated(new Date());
-      user.setName(req.getName());
+      user.setUsername(req.getUsername());
+      user.setEmail(req.getEmail());
       User saved = userRepository.save(user);
       return convertUserToDto(saved);
     }
@@ -111,7 +113,7 @@ public class UserService {
    * @return user in db
    */
   public UserDto findByName(String name) {
-    User user = userRepository.findUserByName(name);
+    User user = userRepository.findUserByUsername(name);
     if (user != null) {
       return convertUserToDto(user);
     }
@@ -140,6 +142,8 @@ public class UserService {
       }
       user.getBranches().add(branch);
       userRepository.save(user);
+      branch.getUsers().add(user);
+      branchRepository.save(branch);
       response.setMessage("OK");
     } catch (NoSuchElementException e) {
       response.setMessage("User not found");
