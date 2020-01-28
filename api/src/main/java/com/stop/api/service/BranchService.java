@@ -4,8 +4,10 @@ import com.stop.api.utils.StopUtils;
 import com.stop.dto.BranchDto;
 import com.stop.model.Bot;
 import com.stop.model.Branch;
+import com.stop.model.User;
 import com.stop.repository.BotRepository;
 import com.stop.repository.BranchRepository;
+import com.stop.repository.UserRepository;
 import com.stop.response.GenericResponse;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +26,9 @@ public class BranchService {
 
   @Autowired
   private BotRepository botRepository;
+
+  @Autowired
+  private UserRepository userRepository;
 
   /**
    * Retrieve all branches.
@@ -116,6 +121,22 @@ public class BranchService {
     branchRepository.deleteById(id);
     response.setMessage("OK");
     return response;
+  }
+
+  /**
+   * Find branches by user.
+   * 
+   * @param userId user id
+   * @return all branches associated to the user
+   */
+  public List<BranchDto> findByUser(Long userId) {
+    User user = userRepository.findById(userId).get();
+    Set<Branch> branches = user.getBranches();
+    List<BranchDto> result = new ArrayList<>();
+    for (Branch branch : branches) {
+      result.add(convertBranchToDto(branch));
+    }
+    return result;
   }
 
 }

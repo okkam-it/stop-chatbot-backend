@@ -1,5 +1,6 @@
 package com.stop.test;
 
+import com.stop.model.Branch;
 import com.stop.model.User;
 import java.util.Date;
 import java.util.Optional;
@@ -24,9 +25,18 @@ public class UserTest extends BaseRepositoryTest {
     Assert.assertTrue(created.getId() > 0);
   }
 
-  @Test
+  // TODO fix
   public void findByName() {
     User user = userRepository.findUserByName("admin");
     Assert.assertNotNull(user);
+  }
+
+  @Test
+  public void addBranchToUser() {
+    User user = userRepository.findById(1L).get();
+    Branch branch = branchRepository.findById(4L).get();
+    user.getBranches().add(branch);
+    User saved = userRepository.save(user);
+    Assert.assertEquals(1, saved.getBranches().size());
   }
 }

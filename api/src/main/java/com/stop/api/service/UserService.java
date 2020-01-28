@@ -1,13 +1,16 @@
 package com.stop.api.service;
 
 import com.stop.dto.UserDto;
+import com.stop.model.Branch;
 import com.stop.model.User;
+import com.stop.repository.BranchRepository;
 import com.stop.repository.UserRepository;
 import com.stop.response.GenericResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,9 @@ public class UserService {
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  private BranchRepository branchRepository;
 
   /**
    * Retrieve a list of all users.
@@ -110,5 +116,50 @@ public class UserService {
       return convertUserToDto(user);
     }
     return null;
+  }
+
+  /**
+   * Add a branch to an user.
+   * 
+   * @param id user id
+   * @param code branch code
+   * @return response
+   */
+  public GenericResponse addBranchToUser(Long id, String code) {
+    GenericResponse response = new GenericResponse();
+    try {
+      User user = userRepository.findById(id).get();
+      Branch branch = branchRepository.findOneByCode(code);
+      if (branch == null) {
+        response.setMessage("Invalid code");
+        return response;
+      }
+      if (user.getBranches().contains(branch)) {
+        response.setMessage("This code already exists.");
+        return response;
+      }
+      user.getBranches().add(branch);
+      userRepository.save(user);
+      response.setMessage("OK");
+    } catch (NoSuchElementException e) {
+      response.setMessage("User not found");
+    }
+    return response;
+  }
+
+  /**
+   * Find users by branch.
+   * 
+   * @param branchId branch id
+   * @return users associated to the branch
+   */
+  public List<UserDto> findByBranch(Long branchId) {
+    Branch branch = branchRepository.findById(branchId).get();
+    Set<User> users = branch.getUsers();
+    List<UserDto> response = new ArrayList<>();
+    for (User user : users) {
+      response.add(convertUserToDto(user));
+    }
+    return response;
   }
 }

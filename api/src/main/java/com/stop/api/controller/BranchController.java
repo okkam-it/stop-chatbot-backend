@@ -56,4 +56,10 @@ public class BranchController {
   public GenericResponse deleteBranch(@PathVariable Long id) {
     return branchService.delete(id);
   }
+
+  @GetMapping("/find/byuser/{userId}")
+  @ResponseBody
+  public List<BranchDto> findByUser(@PathVariable Long userId) {
+    return branchService.findByUser(userId);
+  }
 }

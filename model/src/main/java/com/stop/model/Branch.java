@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "branch")
-public class Branch extends AbstractStopResource {
+public class Branch extends AbstractStopResource implements Comparable<Branch> {
 
   private String name;
   private String code;
@@ -62,6 +62,24 @@ public class Branch extends AbstractStopResource {
 
   public void setCode(String code) {
     this.code = code;
+  }
+
+  @Override
+  public int hashCode() {
+    return Branch.class.getName().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Branch)) {
+      return false;
+    }
+    return getId().equals(((Branch) obj).getId());
+  }
+
+  @Override
+  public int compareTo(Branch o) {
+    return getId().compareTo(o.getId());
   }
 
 }

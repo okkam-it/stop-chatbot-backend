@@ -36,31 +36,45 @@ public class UserController {
   public List<UserDto> listUsers() {
     return userService.listAllUsers();
   }
-  
+
   @GetMapping("/find/byname")
   @ResponseBody
   public UserDto findByName(@RequestParam String name) {
     return userService.findByName(name);
   }
-  
+
+  @GetMapping("/find/bybranch/{branchId}")
+  @ResponseBody
+  public List<UserDto> findByBranch(@PathVariable Long branchId) {
+    return userService.findByBranch(branchId);
+  }
+
   @PostMapping
   @ResponseBody
   public ResponseEntity<UserDto> createUser(HttpServletRequest httpReq, @RequestBody UserDto req) {
     UserDto resp = userService.createUser(req);
     return ResponseEntity.created(ResponseUtils.getCreationUri(httpReq, resp.getId())).body(resp);
   }
-  
+
   @PutMapping("/{id}")
   @ResponseBody
   public GenericResponse updateBot(HttpServletRequest httpReq, @PathVariable Long id,
       @RequestBody UserDto req) {
     return userService.updateUser(id, req);
   }
-  
+
   @DeleteMapping("/{id}")
   @ResponseBody
   public GenericResponse deleteUser(@PathVariable Long id) {
     return userService.delete(id);
+  }
+
+  @PostMapping("/{id}/addbranch")
+  @ResponseBody
+  public GenericResponse addBranchToUser(HttpServletRequest httpReq, @PathVariable Long id,
+      @RequestParam String code) {
+    GenericResponse resp = userService.addBranchToUser(id, code);
+    return resp;
   }
 
 }
