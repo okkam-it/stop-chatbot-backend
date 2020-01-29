@@ -69,11 +69,11 @@ public class UserController {
     return userService.delete(id);
   }
 
-  @PostMapping("/{id}/addbranch")
+  @PostMapping("/{uid}/addbranch")
   @ResponseBody
-  public GenericResponse addBranchToUser(HttpServletRequest httpReq, @PathVariable Long id,
+  public GenericResponse addBranchToUser(HttpServletRequest httpReq, @PathVariable String uid,
       @RequestParam String code) {
-    GenericResponse resp = userService.addBranchToUser(id, code);
+    GenericResponse resp = userService.addBranchToUser(uid, code);
     return resp;
   }
 

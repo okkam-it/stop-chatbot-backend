@@ -34,6 +34,18 @@ public class BotController {
   public List<BotDto> listBots() {
     return botService.listAllBots();
   }
+  
+  @GetMapping("/find/byid/{id}")
+  @ResponseBody
+  public BotDto findById(@PathVariable Long id) {
+    return botService.findById(id);
+  }
+  
+  @GetMapping("/find/bybranch/{branchId}")
+  @ResponseBody
+  public List<BotDto> findByBranch(@PathVariable Long branchId) {
+    return botService.findByBranch(branchId);
+  }
 
   @PostMapping
   @ResponseBody

@@ -54,7 +54,7 @@ public class UserService {
    * @return user created
    */
   public UserDto createUser(UserDto req) {
-    User found = userRepository.findUserByUsername(req.getUsername());
+    User found = userRepository.findOneByUsername(req.getUsername());
     if (found == null) {
       User user = new User();
       user.setUid(req.getUid());
@@ -113,7 +113,7 @@ public class UserService {
    * @return user in db
    */
   public UserDto findByName(String name) {
-    User user = userRepository.findUserByUsername(name);
+    User user = userRepository.findOneByUsername(name);
     if (user != null) {
       return convertUserToDto(user);
     }
@@ -123,14 +123,14 @@ public class UserService {
   /**
    * Add a branch to an user.
    * 
-   * @param id user id
+   * @param uid user uid
    * @param code branch code
    * @return response
    */
-  public GenericResponse addBranchToUser(Long id, String code) {
+  public GenericResponse addBranchToUser(String uid, String code) {
     GenericResponse response = new GenericResponse();
     try {
-      User user = userRepository.findById(id).get();
+      User user = userRepository.findOneByUid(uid);
       Branch branch = branchRepository.findOneByCode(code);
       if (branch == null) {
         response.setMessage("Invalid code");

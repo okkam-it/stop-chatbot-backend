@@ -4,13 +4,16 @@ import com.stop.dto.BotAddressDto;
 import com.stop.dto.BotDto;
 import com.stop.model.Bot;
 import com.stop.model.BotAddress;
+import com.stop.model.Branch;
 import com.stop.repository.BotAddressRepository;
 import com.stop.repository.BotRepository;
+import com.stop.repository.BranchRepository;
 import com.stop.response.GenericResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,9 @@ public class BotService {
 
   @Autowired
   private BotAddressRepository botAddressRepository;
+
+  @Autowired
+  private BranchRepository branchRepository;
 
   /**
    * Create a new bot.
@@ -119,6 +125,41 @@ public class BotService {
     botRepository.deleteById(id);
     response.setMessage("OK");
     return response;
+  }
+
+  /**
+   * Find bot by id.
+   * 
+   * @param id bot id
+   * @return bot
+   */
+  public BotDto findById(Long id) {
+    try {
+      Bot bot = botRepository.findById(id).get();
+      return convertBotToDto(bot);
+    } catch (NoSuchElementException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Find all bots in a branch.
+   * 
+   * @param branchId branch id
+   * @return bots in that branch
+   */
+  public List<BotDto> findByBranch(Long branchId) {
+    try {
+      Branch branch = branchRepository.findById(branchId).get();
+      Set<Bot> bots = branch.getBots();
+      List<BotDto> response = new ArrayList<>();
+      for (Bot bot : bots) {
+        response.add(convertBotToDto(bot));
+      }
+      return response;
+    } catch (NoSuchElementException e) {
+      return null;
+    }
   }
 
 }

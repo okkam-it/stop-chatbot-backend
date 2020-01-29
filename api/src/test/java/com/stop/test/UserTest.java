@@ -27,7 +27,7 @@ public class UserTest extends BaseRepositoryTest {
 
   // TODO fix
   public void findByName() {
-    User user = userRepository.findUserByUsername("admin");
+    User user = userRepository.findOneByUsername("admin");
     Assert.assertNotNull(user);
   }
 

@@ -129,14 +129,32 @@ public class BranchService {
    * @param userId user id
    * @return all branches associated to the user
    */
-  public List<BranchDto> findByUser(Long userId) {
-    User user = userRepository.findById(userId).get();
+  public List<BranchDto> findByUser(String userId) {
+    User user = userRepository.findOneByUid(userId);
+    if (user == null) {
+      return new ArrayList<>();
+    }
     Set<Branch> branches = user.getBranches();
     List<BranchDto> result = new ArrayList<>();
     for (Branch branch : branches) {
       result.add(convertBranchToDto(branch));
     }
     return result;
+  }
+
+  /**
+   * Find a branch given its id.
+   * 
+   * @param id branch id
+   * @return the branch
+   */
+  public BranchDto findById(Long id) {
+    try {
+      Branch branch = branchRepository.findById(id).get();
+      return convertBranchToDto(branch);
+    } catch (NoSuchElementException e) {
+      return null;
+    }
   }
 
 }
