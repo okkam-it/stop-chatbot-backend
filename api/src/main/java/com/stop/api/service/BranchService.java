@@ -129,8 +129,8 @@ public class BranchService {
    * @param userId user id
    * @return all branches associated to the user
    */
-  public List<BranchDto> findByUser(String userId) {
-    User user = userRepository.findOneByUid(userId);
+  public List<BranchDto> findByUser(Long userId) {
+    User user = userRepository.findById(userId).get();
     if (user == null) {
       return new ArrayList<>();
     }

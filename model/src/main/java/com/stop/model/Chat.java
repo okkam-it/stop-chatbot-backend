@@ -20,6 +20,7 @@ public class Chat {
   private String message;
   private Date sendDate;
   private String type;
+  private String user;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "chatroom_id", nullable = false)
@@ -55,6 +56,14 @@ public class Chat {
 
   public void setChatRoom(ChatRoom chatRoom) {
     this.chatRoom = chatRoom;
+  }
+
+  public String getUser() {
+    return user;
+  }
+
+  public void setUser(String user) {
+    this.user = user;
   }
 
 }

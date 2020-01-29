@@ -59,7 +59,7 @@ public class BranchController {
 
   @GetMapping("/find/byuser/{userId}")
   @ResponseBody
-  public List<BranchDto> findByUser(@PathVariable String userId) {
+  public List<BranchDto> findByUser(@PathVariable Long userId) {
     return branchService.findByUser(userId);
   }
   

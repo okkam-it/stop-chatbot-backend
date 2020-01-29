@@ -166,4 +166,18 @@ public class UserService {
     }
     return response;
   }
+
+  /**
+   * Find a user given its uid.
+   * 
+   * @param uid user uid
+   * @return user
+   */
+  public UserDto findByUid(String uid) {
+    User user = userRepository.findOneByUid(uid);
+    if (user != null) {
+      return convertUserToDto(user);
+    }
+    return null;
+  }
 }

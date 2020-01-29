@@ -1,12 +1,15 @@
 package com.stop.api.service;
 
+import com.stop.dto.ChatDto;
 import com.stop.dto.ChatRoomDto;
 import com.stop.model.Bot;
 import com.stop.model.Branch;
+import com.stop.model.Chat;
 import com.stop.model.ChatRoom;
 import com.stop.model.User;
 import com.stop.repository.BotRepository;
 import com.stop.repository.BranchRepository;
+import com.stop.repository.ChatRepository;
 import com.stop.repository.ChatRoomRepository;
 import com.stop.repository.UserRepository;
 import java.util.ArrayList;
@@ -14,6 +17,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +26,9 @@ public class ChatRoomService {
 
   @Autowired
   private ChatRoomRepository chatRoomRepository;
+
+  @Autowired
+  private ChatRepository chatRepository;
 
   @Autowired
   private BotRepository botRepository;
@@ -62,6 +70,7 @@ public class ChatRoomService {
 
   private ChatRoomDto convertChatRoomToDto(ChatRoom chatRoom) {
     ChatRoomDto chatRoomDto = new ChatRoomDto();
+    chatRoomDto.setId(chatRoom.getId());
     chatRoomDto.setBotId(chatRoom.getBot().getId());
     chatRoomDto.setUserId(chatRoom.getUser().getId());
     chatRoomDto.setBranchId(chatRoom.getBranch().getId());
@@ -105,10 +114,46 @@ public class ChatRoomService {
       Branch branch = branchRepository.findById(branchId).get();
       User user = userRepository.findById(userId).get();
       ChatRoom chatRoom = chatRoomRepository.findOneByUserAndBranchAndBot(user, branch, bot);
-      return convertChatRoomToDto(chatRoom);
+      if (chatRoom != null) {
+        return convertChatRoomToDto(chatRoom);
+      }
+      return null;
     } catch (NoSuchElementException e) {
       return null;
     }
+  }
+
+  /**
+   * Find chats in a chatroom.
+   * 
+   * @param id chatroom id
+   * @param limit limit of chats
+   * @return first *limit* chats in the chatroom
+   */
+  public List<ChatDto> findChats(Long id, Integer limit) {
+    try {
+      List<ChatDto> response = new ArrayList<>();
+      ChatRoom chatRoom = chatRoomRepository.findById(id).get();
+      if (chatRoom != null) {
+        PageRequest page = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "sendDate"));
+        List<Chat> chats = chatRepository.findAllByChatRoom(chatRoom, page);
+        for (Chat chat : chats) {
+          response.add(convertChatToDto(chat));
+        }
+      }
+      return response;
+    } catch (NoSuchElementException e) {
+      return new ArrayList<>();
+    }
+  }
+
+  private ChatDto convertChatToDto(Chat chat) {
+    ChatDto chatDto = new ChatDto();
+    chatDto.setUser(chat.getUser());
+    chatDto.setType(chat.getType());
+    chatDto.setMessage(chat.getMessage());
+    chatDto.setSendDate(chat.getSendDate());
+    return chatDto;
   }
 
 }

@@ -1,7 +1,7 @@
 package com.stop.api.controller;
 
 import com.stop.api.utils.StopConstants;
-import com.stop.dto.Chat;
+import com.stop.dto.ChatDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +26,10 @@ public class ChatController {
    * @param sessionId session id
    */
   @MessageMapping(StopConstants.SECURED_CHAT_ROOM)
-  public void sendSpecific(@Payload Chat msg, @Header("simpSessionId") String sessionId)
+  public void sendSpecific(@Payload ChatDto msg, @Header("simpSessionId") String sessionId)
       throws Exception {
     LOG.info("Controlleeeeer");
-
-    simpMessagingTemplate.convertAndSendToUser(msg.getReceiver(),
+    simpMessagingTemplate.convertAndSendToUser(msg.getUser(),
         StopConstants.SECURED_CHAT_SPECIFIC_USER, msg);
 
   }

@@ -48,6 +48,12 @@ public class UserController {
   public List<UserDto> findByBranch(@PathVariable Long branchId) {
     return userService.findByBranch(branchId);
   }
+  
+  @GetMapping("/find/byuid/{uid}")
+  @ResponseBody
+  public UserDto findByUid(@PathVariable String uid) {
+    return userService.findByUid(uid);
+  }
 
   @PostMapping
   @ResponseBody

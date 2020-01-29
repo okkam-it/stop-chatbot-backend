@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 public class ChatRoomTest extends BaseRepositoryTest {
 
@@ -32,7 +34,8 @@ public class ChatRoomTest extends BaseRepositoryTest {
     chat.setType("newmsg");
     chatRepository.save(chat);
 
-    List<Chat> chats = chatRepository.findAllByChatRoom(saved);
+    PageRequest page = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "sendDate"));
+    List<Chat> chats = chatRepository.findAllByChatRoom(saved, page);
     Assert.assertEquals(1, chats.size());
   }
 
