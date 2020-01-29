@@ -6,6 +6,7 @@ public class BotDto {
   private String name;
   private String description;
   private String showTo;
+  private boolean available;
   private BotAddressDto address;
 
   public Long getId() {
@@ -46,5 +47,13 @@ public class BotDto {
 
   public void setAddress(BotAddressDto address) {
     this.address = address;
+  }
+
+  public boolean isAvailable() {
+    return available;
+  }
+
+  public void setAvailable(boolean available) {
+    this.available = available;
   }
 }

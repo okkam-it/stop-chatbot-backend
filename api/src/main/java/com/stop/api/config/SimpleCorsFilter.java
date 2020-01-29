@@ -9,17 +9,18 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SimpleCorsFilter implements Filter {
 
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(SimpleCorsFilter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SimpleCorsFilter.class);
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
-    LOGGER.info("Initilisation du Middleware");
+    LOG.info("Initilisation du Middleware");
   }
 
   @Override

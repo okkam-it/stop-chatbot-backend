@@ -79,6 +79,7 @@ public class BotService {
     botAddressDto.setPath(bot.getBotAddress().getApiPath());
     botDto.setAddress(botAddressDto);
     botDto.setShowTo(bot.getShowTo());
+    botDto.setAvailable(bot.isAvailable());
     return botDto;
   }
 
@@ -95,6 +96,7 @@ public class BotService {
       bot.setName(req.getName());
       bot.setDescription(req.getDescription());
       bot.setShowTo(req.getShowTo());
+      bot.setAvailable(req.isAvailable());
       bot.getBotAddress().setIp(req.getAddress().getIp());
       bot.getBotAddress().setPort(req.getAddress().getPort());
       bot.getBotAddress().setApiPath(req.getAddress().getPath());
