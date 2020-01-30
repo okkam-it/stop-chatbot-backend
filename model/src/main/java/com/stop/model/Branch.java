@@ -12,16 +12,17 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "branch")
-public class Branch extends AbstractStopResource {
+public class Branch extends AbstractStopResource implements Comparable<Branch> {
 
   private String name;
+  private String code;
   @ManyToMany
   private Set<User> users = new HashSet<>();
   @ManyToMany
   private Set<Bot> bots = new HashSet<>();
 
   @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL)
-  private List<ChatRoom> chatroom = new ArrayList<>();
+  private List<ChatRoom> chatRoom = new ArrayList<>();
 
   public String getName() {
     return name;
@@ -47,12 +48,38 @@ public class Branch extends AbstractStopResource {
     this.bots = bots;
   }
 
-  public List<ChatRoom> getChatroom() {
-    return chatroom;
+  public List<ChatRoom> getChatRoom() {
+    return chatRoom;
   }
 
-  public void setChatroom(List<ChatRoom> chatroom) {
-    this.chatroom = chatroom;
+  public void setChatRoom(List<ChatRoom> chatRoom) {
+    this.chatRoom = chatRoom;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  @Override
+  public int hashCode() {
+    return Branch.class.getName().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Branch)) {
+      return false;
+    }
+    return getId().equals(((Branch) obj).getId());
+  }
+
+  @Override
+  public int compareTo(Branch o) {
+    return getId().compareTo(o.getId());
   }
 
 }

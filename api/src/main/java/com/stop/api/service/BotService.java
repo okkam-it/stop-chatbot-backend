@@ -1,15 +1,28 @@
 package com.stop.api.service;
 
+import com.stop.dto.BotAddressDto;
 import com.stop.dto.BotDto;
+import com.stop.dto.ChatDto;
+import com.stop.dto.response.BotResponseDto;
 import com.stop.model.Bot;
 import com.stop.model.BotAddress;
+import com.stop.model.Branch;
 import com.stop.repository.BotAddressRepository;
 import com.stop.repository.BotRepository;
+import com.stop.repository.BranchRepository;
+import com.stop.response.GenericResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class BotService {
@@ -19,6 +32,12 @@ public class BotService {
 
   @Autowired
   private BotAddressRepository botAddressRepository;
+
+  @Autowired
+  private BranchRepository branchRepository;
+
+  @Autowired
+  private RestTemplate restTemplate;
 
   /**
    * Create a new bot.
@@ -34,9 +53,9 @@ public class BotService {
     bot.setShowTo(req.getShowTo());
 
     BotAddress botAddress = new BotAddress();
-    botAddress.setIp(req.getIp());
-    botAddress.setPort(req.getPort());
-    botAddress.setApiPath(req.getPath());
+    botAddress.setIp(req.getAddress().getIp());
+    botAddress.setPort(req.getAddress().getPort());
+    botAddress.setApiPath(req.getAddress().getPath());
     Bot saved = botRepository.save(bot);
     saved.setBotAddress(botAddress);
     botAddress.setBot(saved);
@@ -63,10 +82,13 @@ public class BotService {
     botDto.setId(bot.getId());
     botDto.setName(bot.getName());
     botDto.setDescription(bot.getDescription());
-    botDto.setIp(bot.getBotAddress().getIp());
-    botDto.setPort(bot.getBotAddress().getPort());
-    botDto.setPath(bot.getBotAddress().getApiPath());
+    BotAddressDto botAddressDto = new BotAddressDto();
+    botAddressDto.setIp(bot.getBotAddress().getIp());
+    botAddressDto.setPort(bot.getBotAddress().getPort());
+    botAddressDto.setPath(bot.getBotAddress().getApiPath());
+    botDto.setAddress(botAddressDto);
     botDto.setShowTo(bot.getShowTo());
+    botDto.setAvailable(bot.isAvailable());
     return botDto;
   }
 
@@ -76,17 +98,108 @@ public class BotService {
    * @param req bot to update
    * @return
    */
-  public BotDto updateBot(BotDto req) {
-    Bot bot = botRepository.findById(req.getId()).get();
-    bot.setName(req.getName());
-    bot.setDescription(req.getDescription());
-    bot.setShowTo(req.getShowTo());
-    bot.getBotAddress().setIp(req.getIp());
-    bot.getBotAddress().setPort(req.getPort());
-    bot.getBotAddress().setApiPath(req.getPath());
-    botAddressRepository.save(bot.getBotAddress());
-    Bot updated = botRepository.save(bot);
-    return convertBotToDto(updated);
+  public GenericResponse updateBot(Long id, BotDto req) {
+    GenericResponse response = new GenericResponse();
+    try {
+      Bot bot = botRepository.findById(id).get();
+      bot.setName(req.getName());
+      bot.setDescription(req.getDescription());
+      bot.setShowTo(req.getShowTo());
+      bot.setAvailable(req.isAvailable());
+      bot.getBotAddress().setIp(req.getAddress().getIp());
+      bot.getBotAddress().setPort(req.getAddress().getPort());
+      bot.getBotAddress().setApiPath(req.getAddress().getPath());
+      botAddressRepository.save(bot.getBotAddress());
+      botRepository.save(bot);
+      response.setMessage("OK");
+    } catch (NoSuchElementException e) {
+      response.setMessage("KO");
+    }
+    return response;
+  }
+
+  /**
+   * Delete a bot.
+   * 
+   * @param id bot id to delete
+   * @return OK if bot was successfully deleted
+   */
+  @Transactional
+  public GenericResponse delete(Long id) {
+    GenericResponse response = new GenericResponse();
+    Bot bot = botRepository.findById(id).get();
+    if (bot == null) {
+      response.setMessage("KO");
+      return response;
+    }
+    botAddressRepository.deleteByBot(bot);
+    botRepository.deleteById(id);
+    response.setMessage("OK");
+    return response;
+  }
+
+  /**
+   * Find bot by id.
+   * 
+   * @param id bot id
+   * @return bot
+   */
+  public BotDto findById(Long id) {
+    try {
+      Bot bot = botRepository.findById(id).get();
+      return convertBotToDto(bot);
+    } catch (NoSuchElementException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Find all bots in a branch.
+   * 
+   * @param branchId branch id
+   * @return bots in that branch
+   */
+  public List<BotDto> findByBranch(Long branchId) {
+    try {
+      Branch branch = branchRepository.findById(branchId).get();
+      Set<Bot> bots = branch.getBots();
+      List<BotDto> response = new ArrayList<>();
+      for (Bot bot : bots) {
+        response.add(convertBotToDto(bot));
+      }
+      return response;
+    } catch (NoSuchElementException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Send a message to a bot.
+   * 
+   * @param botId bot to send
+   * @param message message to send
+   * @return the response from the bot
+   */
+  public ChatDto sendMessageToBot(Long botId, ChatDto message) {
+    Bot bot = botRepository.findById(botId).get();
+    BotAddress address = bot.getBotAddress();
+    String url =
+        String.format("http://%s:%s/%s/", address.getIp(), address.getPort(), address.getApiPath());
+    HttpEntity<?> entity = new HttpEntity<>(message);
+    ResponseEntity<BotResponseDto[]> response =
+        restTemplate.exchange(url, HttpMethod.POST, entity, BotResponseDto[].class);
+    BotResponseDto[] responsesDto = response.getBody();
+    if (responsesDto.length > 0) {
+      ChatDto chatDto = new ChatDto();
+      chatDto.setChatRoomId(message.getChatRoomId());
+      chatDto.setMessage(responsesDto[0].getText());
+      chatDto.setType("bot");
+      chatDto.setUser("bot");
+      chatDto.setSendDate(new Date());
+      return chatDto;
+    }
+    return null;
+    // TODO manage error
   }
 
 }

@@ -2,6 +2,7 @@ package com.stop.test;
 
 import com.stop.StopBackendApplication;
 import com.stop.model.Bot;
+import com.stop.model.BotAddress;
 import com.stop.model.Branch;
 import com.stop.model.User;
 import com.stop.repository.BotAddressRepository;
@@ -44,7 +45,7 @@ public abstract class BaseRepositoryTest {
   @PostConstruct
   public void init() {
     User user = new User();
-    user.setName("admin");
+    user.setUsername("admin");
     user.setAdmin(true);
     user.setCreated(new Date());
     userRepository.save(user);
@@ -56,6 +57,13 @@ public abstract class BaseRepositoryTest {
     bot.setDescription("A bot on initial data");
     bot.setShowTo("ADMIN");
     botRepository.save(bot);
+    
+    BotAddress address=new BotAddress();
+    address.setIp("localhost");
+    address.setPort(5000);
+    address.setApiPath("chatstop/bot_request");
+    address.setBot(bot);
+    botAddressRepository.save(address);
     
     Branch branch = new Branch();
     branch.setCreated(new Date());

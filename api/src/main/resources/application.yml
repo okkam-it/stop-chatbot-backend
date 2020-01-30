@@ -36,7 +36,7 @@ spring:
     database: H2
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: false
   port: 8081
 

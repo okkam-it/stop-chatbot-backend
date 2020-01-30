@@ -14,22 +14,16 @@ import javax.persistence.Table;
 @Table(name = "user")
 public class User extends AbstractStopResource {
 
-  private String name;
+  private String uid;
+  private String username;
+  private String email;
   private boolean admin;
 
   @ManyToMany
   private Set<Branch> branches = new HashSet<>();
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-  private List<ChatRoom> chatroom = new ArrayList<>();
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
+  private List<ChatRoom> chatRoom = new ArrayList<>();
 
   public boolean isAdmin() {
     return admin;
@@ -47,12 +41,36 @@ public class User extends AbstractStopResource {
     this.branches = branches;
   }
 
-  public List<ChatRoom> getChatroom() {
-    return chatroom;
+  public List<ChatRoom> getChatRoom() {
+    return chatRoom;
   }
 
-  public void setChatroom(List<ChatRoom> chatroom) {
-    this.chatroom = chatroom;
+  public void setChatRoom(List<ChatRoom> chatRoom) {
+    this.chatRoom = chatRoom;
+  }
+
+  public String getUid() {
+    return uid;
+  }
+
+  public void setUid(String uid) {
+    this.uid = uid;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 
 }

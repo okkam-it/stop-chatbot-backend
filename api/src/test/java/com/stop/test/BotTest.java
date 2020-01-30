@@ -4,6 +4,7 @@ import com.stop.model.Bot;
 import com.stop.model.BotAddress;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +16,7 @@ public class BotTest extends BaseRepositoryTest {
   @Test
   public void getBots() {
     List<Bot> bots = botRepository.findAll();
-    Assert.assertEquals(1, bots.size());
+    Assert.assertTrue(bots.size() > 0);
   }
 
   @Test
@@ -41,12 +42,27 @@ public class BotTest extends BaseRepositoryTest {
     botAddressRepository.save(botAddress);
   }
 
+  @Test
   public void updateBotAddress() {
     Bot bot = botRepository.findById(2L).get();
     BotAddress address = botAddressRepository.findOneByBot(bot);
     address.setPort(EDIT_PORT);
     BotAddress updated = botAddressRepository.save(address);
     Assert.assertEquals(EDIT_PORT, updated.getPort());
+  }
+
+  @Test(expected = NoSuchElementException.class)
+  public void deleteBot() {
+    Bot toDelete = new Bot();
+    toDelete.setAvailable(true);
+    toDelete.setCreated(new Date());
+    toDelete.setName("To delete bot");
+    toDelete.setDescription("A bot created to delete");
+    toDelete.setShowTo("ADMIN");
+    Bot saved = botRepository.save(toDelete);
+    Assert.assertTrue(saved.getId() > 0);
+    botRepository.deleteById(saved.getId());
+    botRepository.findById(saved.getId()).get();
   }
 
 }
