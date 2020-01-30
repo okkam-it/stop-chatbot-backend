@@ -2,6 +2,8 @@ package com.stop.api.service;
 
 import com.stop.dto.BotAddressDto;
 import com.stop.dto.BotDto;
+import com.stop.dto.ChatDto;
+import com.stop.dto.response.BotResponseDto;
 import com.stop.model.Bot;
 import com.stop.model.BotAddress;
 import com.stop.model.Branch;
@@ -16,7 +18,11 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class BotService {
@@ -29,6 +35,9 @@ public class BotService {
 
   @Autowired
   private BranchRepository branchRepository;
+
+  @Autowired
+  private RestTemplate restTemplate;
 
   /**
    * Create a new bot.
@@ -162,6 +171,35 @@ public class BotService {
     } catch (NoSuchElementException e) {
       return null;
     }
+  }
+
+  /**
+   * Send a message to a bot.
+   * 
+   * @param botId bot to send
+   * @param message message to send
+   * @return the response from the bot
+   */
+  public ChatDto sendMessageToBot(Long botId, ChatDto message) {
+    Bot bot = botRepository.findById(botId).get();
+    BotAddress address = bot.getBotAddress();
+    String url =
+        String.format("http://%s:%s/%s/", address.getIp(), address.getPort(), address.getApiPath());
+    HttpEntity<?> entity = new HttpEntity<>(message);
+    ResponseEntity<BotResponseDto[]> response =
+        restTemplate.exchange(url, HttpMethod.POST, entity, BotResponseDto[].class);
+    BotResponseDto[] responsesDto = response.getBody();
+    if (responsesDto.length > 0) {
+      ChatDto chatDto = new ChatDto();
+      chatDto.setChatRoomId(message.getChatRoomId());
+      chatDto.setMessage(responsesDto[0].getText());
+      chatDto.setType("bot");
+      chatDto.setUser("bot");
+      chatDto.setSendDate(new Date());
+      return chatDto;
+    }
+    return null;
+    // TODO manage error
   }
 
 }

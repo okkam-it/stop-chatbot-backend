@@ -1,17 +1,20 @@
 package com.stop.api.controller;
 
-import com.stop.api.utils.StopConstants;
+import com.stop.api.service.BotService;
+import com.stop.api.service.ChatRoomService;
 import com.stop.dto.ChatDto;
+import com.stop.dto.ChatRoomDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Controller
+@CrossOrigin
 public class ChatController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ChatController.class);
@@ -19,19 +22,35 @@ public class ChatController {
   @Autowired
   private SimpMessagingTemplate simpMessagingTemplate;
 
-  /**
-   * Send message.
-   * 
-   * @param msg message
-   * @param sessionId session id
-   */
-  @MessageMapping(StopConstants.SECURED_CHAT_ROOM)
-  public void sendSpecific(@Payload ChatDto msg, @Header("simpSessionId") String sessionId)
-      throws Exception {
-    LOG.info("Controlleeeeer");
-    simpMessagingTemplate.convertAndSendToUser(msg.getUser(),
-        StopConstants.SECURED_CHAT_SPECIFIC_USER, msg);
+  @Autowired
+  private ChatRoomService chatRoomService;
 
+  @Autowired
+  private BotService botService;
+
+  /**
+   * Send a message to a bot, retrieve a response.
+   * 
+   * @param message a message from a user
+   * @return bot response
+   * @throws Exception if an error occurs
+   */
+  @MessageMapping("/hello")
+  @SendTo("/bot/response")
+  public ChatDto greeting(ChatDto message) throws Exception {
+    LOG.info("Websocket called!");
+    Thread.sleep(1000); // simulated delay
+    ChatRoomDto chatRoomDto = chatRoomService.findById(message.getChatRoomId());
+    if (chatRoomDto != null) {
+      chatRoomService.saveChat(chatRoomDto.getId(), message);
+      ChatDto response = botService.sendMessageToBot(chatRoomDto.getBotId(), message);
+      chatRoomService.saveChat(chatRoomDto.getId(), response);
+      LOG.info("Response sent " + response.getMessage());
+      return response;
+    } else {
+      // TODO manage error
+      return null;
+    }
   }
 
 }

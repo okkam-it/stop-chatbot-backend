@@ -34,7 +34,7 @@ public class ChatRoomTest extends BaseRepositoryTest {
     chat.setType("newmsg");
     chatRepository.save(chat);
 
-    PageRequest page = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "sendDate"));
+    PageRequest page = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "sendDate"));
     List<Chat> chats = chatRepository.findAllByChatRoom(saved, page);
     Assert.assertEquals(1, chats.size());
   }

@@ -23,16 +23,27 @@ public class StopBackendConfig implements WebSocketMessageBrokerConfigurer {
 
   private static final int CONNECTION_TIMEOUT = 5_000;
 
+  // @Override
+  // public void configureMessageBroker(MessageBrokerRegistry config) {
+  // config.enableSimpleBroker("/secured/user/queue/specific-user");
+  // config.setApplicationDestinationPrefixes("/stop");
+  // config.setUserDestinationPrefix("/secured/user");
+  // }
+  //
+  // @Override
+  // public void registerStompEndpoints(StompEndpointRegistry registry) {
+  // registry.addEndpoint("/stop/secured").setAllowedOrigins("*").withSockJS();
+  // }
+
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
-    config.enableSimpleBroker("/secured/user/queue/specific-user");
-    config.setApplicationDestinationPrefixes("/stop");
-    config.setUserDestinationPrefix("/secured/user");
+    config.enableSimpleBroker("/bot");
+    config.setApplicationDestinationPrefixes("/app");
   }
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/stop/secured").setAllowedOrigins("*").withSockJS();
+    registry.addEndpoint("/stop-chatbot-websocket").setAllowedOrigins("*").withSockJS();
   }
 
   /**

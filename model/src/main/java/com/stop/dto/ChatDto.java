@@ -2,8 +2,9 @@ package com.stop.dto;
 
 import java.util.Date;
 
-public class ChatDto {
+public class ChatDto implements Comparable<ChatDto> {
 
+  private Long chatRoomId;
   private String type;
   private String message;
   private Date sendDate;
@@ -11,6 +12,14 @@ public class ChatDto {
 
   public enum MessageType {
     CHAT, JOIN, LEAVE
+  }
+
+  public Long getChatRoomId() {
+    return chatRoomId;
+  }
+
+  public void setChatRoomId(Long chatRoomId) {
+    this.chatRoomId = chatRoomId;
   }
 
   public String getType() {
@@ -43,6 +52,11 @@ public class ChatDto {
 
   public void setUser(String user) {
     this.user = user;
+  }
+
+  @Override
+  public int compareTo(ChatDto o) {
+    return sendDate.compareTo(o.getSendDate());
   }
 
 }

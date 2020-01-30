@@ -13,9 +13,11 @@ import com.stop.repository.ChatRepository;
 import com.stop.repository.ChatRoomRepository;
 import com.stop.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -66,6 +68,21 @@ public class ChatRoomService {
       result.add(convertChatRoomToDto(chatRoom));
     }
     return result;
+  }
+
+  /**
+   * Find a chatroom by id.
+   * 
+   * @param chatRoomId chat room id
+   * @return chatroom with the given id
+   */
+  public ChatRoomDto findById(Long chatRoomId) {
+    try {
+      ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).get();
+      return convertChatRoomToDto(chatRoom);
+    } catch (NoSuchElementException e) {
+      return null;
+    }
   }
 
   private ChatRoomDto convertChatRoomToDto(ChatRoom chatRoom) {
@@ -135,12 +152,15 @@ public class ChatRoomService {
       List<ChatDto> response = new ArrayList<>();
       ChatRoom chatRoom = chatRoomRepository.findById(id).get();
       if (chatRoom != null) {
+        // get the last *limit* chats 
         PageRequest page = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "sendDate"));
         List<Chat> chats = chatRepository.findAllByChatRoom(chatRoom, page);
         for (Chat chat : chats) {
           response.add(convertChatToDto(chat));
         }
       }
+      // sort from the oldest to the newer
+      Collections.sort(response);
       return response;
     } catch (NoSuchElementException e) {
       return new ArrayList<>();
@@ -154,6 +174,27 @@ public class ChatRoomService {
     chatDto.setMessage(chat.getMessage());
     chatDto.setSendDate(chat.getSendDate());
     return chatDto;
+  }
+
+  /**
+   * Save a chat.
+   * 
+   * @param chatRoomId chat room of the chat
+   * @param message chat to save
+   */
+  @Transactional
+  public void saveChat(Long chatRoomId, ChatDto message) {
+    ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).get();
+    Chat chat = new Chat();
+    chat.setChatRoom(chatRoom);
+    chat.setMessage(message.getMessage());
+    chat.setSendDate(new Date());
+    chat.setType(message.getType());
+    chat.setUser(message.getUser());
+    Chat saved = chatRepository.save(chat);
+    chatRoom.getChats().add(saved);
+    chatRoomRepository.save(chatRoom);
+
   }
 
 }
