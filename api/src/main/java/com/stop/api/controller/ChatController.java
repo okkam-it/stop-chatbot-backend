@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -18,9 +17,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 public class ChatController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ChatController.class);
-
-  @Autowired
-  private SimpMessagingTemplate simpMessagingTemplate;
 
   @Autowired
   private ChatRoomService chatRoomService;
@@ -38,14 +34,12 @@ public class ChatController {
   @MessageMapping("/hello")
   @SendTo("/bot/response")
   public ChatDto greeting(ChatDto message) throws Exception {
-    LOG.info("Websocket called!");
-    Thread.sleep(1000); // simulated delay
+    LOG.debug("Websocket called");
     ChatRoomDto chatRoomDto = chatRoomService.findById(message.getChatRoomId());
     if (chatRoomDto != null) {
       chatRoomService.saveChat(chatRoomDto.getId(), message);
       ChatDto response = botService.sendMessageToBot(chatRoomDto.getBotId(), message);
       chatRoomService.saveChat(chatRoomDto.getId(), response);
-      LOG.info("Response sent " + response.getMessage());
       return response;
     } else {
       // TODO manage error
