@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -24,6 +25,9 @@ public class BotAvailabilityTimerTask {
 
   @Autowired
   private RestTemplate restTemplate;
+  
+  @Autowired
+  private SimpMessagingTemplate brokerMessagingTemplate;
 
   /**
    * Run check on bots availability. Every 10 seconds check if the bots are available. Task starts
@@ -39,7 +43,8 @@ public class BotAvailabilityTimerTask {
       if (bot.isAvailable() != available) {
         bot.setAvailable(available);
         botService.updateBot(bot.getId(), bot);
-        LOG.debug("Bot updated");
+        brokerMessagingTemplate.convertAndSend("/bot/availability", bot);
+        LOG.info("Bot updated");
       }
     }
 

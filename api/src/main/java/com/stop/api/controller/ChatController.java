@@ -7,6 +7,7 @@ import com.stop.dto.ChatRoomDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -31,11 +32,11 @@ public class ChatController {
    * @return bot response
    * @throws Exception if an error occurs
    */
-  @MessageMapping("/hello")
+  @MessageMapping("/bot/request/{chatRoomId}")
   @SendTo("/bot/response")
-  public ChatDto greeting(ChatDto message) throws Exception {
+  public ChatDto greeting(@DestinationVariable Long chatRoomId, ChatDto message) throws Exception {
     LOG.debug("Websocket called");
-    ChatRoomDto chatRoomDto = chatRoomService.findById(message.getChatRoomId());
+    ChatRoomDto chatRoomDto = chatRoomService.findById(chatRoomId);
     if (chatRoomDto != null) {
       chatRoomService.saveChat(chatRoomDto.getId(), message);
       ChatDto response = botService.sendMessageToBot(chatRoomDto.getBotId(), message);
