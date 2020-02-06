@@ -5,7 +5,9 @@ public class GenericResponse {
   private int status;
   private String message;
 
-  public GenericResponse() {}
+  public GenericResponse() {
+    // empty constructor
+  }
 
   public GenericResponse(int status, String message) {
     this.status = status;

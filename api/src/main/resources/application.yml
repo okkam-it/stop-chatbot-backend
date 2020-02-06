@@ -11,14 +11,14 @@ spring:
     multipart:
       enabled: false
   profiles:
-    active: development
+    active: development-mysql
+
+server:
+  port: 8081
 
 # Profiles
 ---
 spring.profiles: development
-
-server:
-  port: 8081
 
 spring:
   datasource:
@@ -29,9 +29,6 @@ spring:
     url: jdbc:h2:file:/tmp/stop-backend;AUTO_SERVER=true
     username: sa
     validationQuery: SELECT 1
-  http:
-    multipart:
-      enabled: false
   jpa:
     database: H2
     database-platform: org.hibernate.dialect.H2Dialect
@@ -44,3 +41,21 @@ spring:
     console:
       enabled:true
       path:/h2-console
+      
+---
+spring.profiles: development-mysql
+
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    username: root
+    password: manager1
+    platform: mysql
+    # Keep the connection alive if idle for a long time (needed in production)
+    testWhileIdle: true
+    url: jdbc:mysql://localhost:3306/stop_backend?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    validationQuery: SELECT 1
+  jpa:
+    hibernate.ddl-auto: create
+    show-sql: false
+  port: 8081
