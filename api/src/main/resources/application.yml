@@ -49,7 +49,7 @@ spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
     username: root
-    password: manager1
+    password: rootPwd
     platform: mysql
     # Keep the connection alive if idle for a long time (needed in production)
     testWhileIdle: true
