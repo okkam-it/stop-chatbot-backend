@@ -17,6 +17,7 @@
 		<httpclient.version>4.5.3</httpclient.version>
 		<h2.version>1.4.189</h2.version>
 		<mysql.version>8.0.19</mysql.version>
+		<swagger.version>2.9.2</swagger.version>
 		<junit.version>4.12</junit.version>
 	</properties>
 
@@ -71,6 +72,16 @@
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>${mysql.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger2</artifactId>
+				<version>${swagger.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger-ui</artifactId>
+				<version>${swagger.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>

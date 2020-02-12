@@ -29,24 +29,48 @@ public class BotController {
   @Autowired
   private BotService botService;
 
+  /**
+   * Retrieve a list of all bots configured.
+   * 
+   * @return a list of bots
+   */
   @GetMapping
   @ResponseBody
   public List<BotDto> listBots() {
     return botService.listAllBots();
   }
-  
+
+  /**
+   * Finds a bot given its id.
+   * 
+   * @param id bot id
+   * @return a bot with the given id
+   */
   @GetMapping("/find/byid/{id}")
   @ResponseBody
   public BotDto findById(@PathVariable Long id) {
     return botService.findById(id);
   }
-  
+
+  /**
+   * Find a list of bots associated to a branch.
+   * 
+   * @param branchId branch id
+   * @return all bots configured to the branch
+   */
   @GetMapping("/find/bybranch/{branchId}")
   @ResponseBody
   public List<BotDto> findByBranch(@PathVariable Long branchId) {
     return botService.findByBranch(branchId);
   }
 
+  /**
+   * Create a new bot.
+   * 
+   * @param httpReq http request
+   * @param req bot to create
+   * @return bot created
+   */
   @PostMapping
   @ResponseBody
   public ResponseEntity<BotDto> createBot(HttpServletRequest httpReq, @RequestBody BotDto req) {
@@ -54,13 +78,27 @@ public class BotController {
     return ResponseEntity.created(ResponseUtils.getCreationUri(httpReq, resp.getId())).body(resp);
   }
 
+  /**
+   * Update a bot.
+   * 
+   * @param httpReq http request
+   * @param id id of the bot to update
+   * @param req bot to update
+   * @return update response
+   */
   @PutMapping("/{id}")
   @ResponseBody
-  public GenericResponse updateBot(HttpServletRequest httpReq, @PathVariable Long id,
+  public BotDto updateBot(HttpServletRequest httpReq, @PathVariable Long id,
       @RequestBody BotDto req) {
     return botService.updateBot(id, req);
   }
 
+  /**
+   * Delete a bot.
+   * 
+   * @param id id of the bot to delete
+   * @return delete response
+   */
   @DeleteMapping("/{id}")
   @ResponseBody
   public GenericResponse deleteBot(@PathVariable Long id) {

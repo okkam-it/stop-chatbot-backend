@@ -20,9 +20,11 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class BotService {
@@ -96,10 +98,9 @@ public class BotService {
    * Update an existing bot.
    * 
    * @param req bot to update
-   * @return
+   * @return bot updated
    */
-  public GenericResponse updateBot(Long id, BotDto req) {
-    GenericResponse response = new GenericResponse();
+  public BotDto updateBot(Long id, BotDto req) {
     try {
       Bot bot = botRepository.findById(id).get();
       bot.setName(req.getName());
@@ -110,12 +111,11 @@ public class BotService {
       bot.getBotAddress().setPort(req.getAddress().getPort());
       bot.getBotAddress().setApiPath(req.getAddress().getPath());
       botAddressRepository.save(bot.getBotAddress());
-      botRepository.save(bot);
-      response.setMessage("OK");
+      Bot updated = botRepository.save(bot);
+      return convertBotToDto(updated);
     } catch (NoSuchElementException e) {
-      response.setMessage("KO");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bot not found.");
     }
-    return response;
   }
 
   /**
@@ -126,14 +126,13 @@ public class BotService {
    */
   @Transactional
   public GenericResponse delete(Long id) {
-    GenericResponse response = new GenericResponse();
     Bot bot = botRepository.findById(id).get();
     if (bot == null) {
-      response.setMessage("KO");
-      return response;
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bot not found.");
     }
     botAddressRepository.deleteByBot(bot);
     botRepository.deleteById(id);
+    GenericResponse response = new GenericResponse();
     response.setMessage("OK");
     return response;
   }
@@ -149,7 +148,7 @@ public class BotService {
       Bot bot = botRepository.findById(id).get();
       return convertBotToDto(bot);
     } catch (NoSuchElementException e) {
-      return null;
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bot not found.", e);
     }
   }
 
@@ -169,7 +168,7 @@ public class BotService {
       }
       return response;
     } catch (NoSuchElementException e) {
-      return null;
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bot not found.", e);
     }
   }
 
@@ -182,6 +181,9 @@ public class BotService {
    */
   public ChatDto sendMessageToBot(Long botId, ChatDto message) {
     Bot bot = botRepository.findById(botId).get();
+    if (bot == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bot not found.");
+    }
     BotAddress address = bot.getBotAddress();
     String url =
         String.format("http://%s:%s/%s/", address.getIp(), address.getPort(), address.getApiPath());

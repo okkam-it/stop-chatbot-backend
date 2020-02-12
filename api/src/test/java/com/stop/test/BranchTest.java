@@ -1,41 +1,45 @@
 package com.stop.test;
 
-import com.stop.model.Bot;
-import com.stop.model.Branch;
-import java.util.Date;
-import java.util.NoSuchElementException;
+import com.stop.dto.BotDto;
+import com.stop.dto.BranchDto;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.web.server.ResponseStatusException;
 
 public class BranchTest extends BaseRepositoryTest {
 
   @Test
-  public void createBranch() {
-    Branch branch = new Branch();
-    branch.setCreated(new Date());
+  public void getBranches() {
+    List<BranchDto> branches = branchService.listAllBranches();
+    Assert.assertTrue(branches.size() > 0);
+  }
+
+  @Test
+  public void createBranchDto() {
+    BranchDto branch = new BranchDto();
     branch.setName("Test branch");
-    Branch saved = branchRepository.save(branch);
+    BranchDto saved = branchService.createBranch(branch);
     Assert.assertTrue(saved.getId() > 0);
   }
 
   @Test
-  public void addBotToBranch() {
-    Bot bot = botRepository.findById(2L).get();
-    Branch branch = branchRepository.findById(4L).get();
-    branch.getBots().add(bot);
-    Branch botAdded = branchRepository.save(branch);
+  public void addBotToBranchDto() {
+    BotDto bot = botService.findById(2L);
+    BranchDto branch = branchService.findById(4L);
+    branch.getBots().add(bot.getId());
+    BranchDto botAdded = branchService.updateBranch(branch.getId(), branch);
     Assert.assertEquals(1, botAdded.getBots().size());
   }
 
-  @Test(expected = NoSuchElementException.class)
-  public void deleteBranch() {
-    Branch branch = new Branch();
-    branch.setCreated(new Date());
-    branch.setName("Branch to delete");
-    Branch saved = branchRepository.save(branch);
+  @Test(expected = ResponseStatusException.class)
+  public void deleteBranchDto() {
+    BranchDto branch = new BranchDto();
+    branch.setName("BranchDto to delete");
+    BranchDto saved = branchService.createBranch(branch);
     Assert.assertTrue(saved.getId() > 0);
-    branchRepository.deleteById(saved.getId());
-    branchRepository.findById(branch.getId()).get();
+    branchService.delete(saved.getId());
+    branchService.findById(saved.getId());
   }
 
 }

@@ -1,68 +1,71 @@
 package com.stop.test;
 
-import com.stop.model.Bot;
-import com.stop.model.BotAddress;
-import java.util.Date;
+import com.stop.dto.BotAddressDto;
+import com.stop.dto.BotDto;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.web.server.ResponseStatusException;
 
 public class BotTest extends BaseRepositoryTest {
 
   private static final int EDIT_PORT = 5001;
 
   @Test
+  public void findBotById() {
+    BotDto bot = botService.findById(2L);
+    Assert.assertTrue(bot != null);
+  }
+
+  @Test
   public void getBots() {
-    List<Bot> bots = botRepository.findAll();
+    List<BotDto> bots = botService.listAllBots();
     Assert.assertTrue(bots.size() > 0);
   }
 
   @Test
   public void createBot() {
-    Bot bot = new Bot();
+    BotDto bot = new BotDto();
     bot.setAvailable(true);
-    bot.setCreated(new Date());
     bot.setName("Test bot");
     bot.setDescription("A bot created for test purposes");
     bot.setShowTo("ADMIN");
-    Bot saved = botRepository.save(bot);
+    bot.setAddress(new BotAddressDto());
+    BotDto saved = botService.createBot(bot);
     Assert.assertTrue(saved.getId() > 0);
   }
 
   @Test
   public void createBotAddress() {
-    BotAddress botAddress = new BotAddress();
+    BotAddressDto botAddress = new BotAddressDto();
     botAddress.setIp("localhost");
     botAddress.setPort(5000);
-    botAddress.setApiPath("");
-    Optional<Bot> bot = botRepository.findById(2L);
-    botAddress.setBot(bot.get());
-    botAddressRepository.save(botAddress);
+    botAddress.setPath("");
+    BotDto bot = botService.findById(2L);
+    bot.setAddress(botAddress);
+    botService.updateBot(2L, bot);
   }
 
   @Test
   public void updateBotAddress() {
-    Bot bot = botRepository.findById(2L).get();
-    BotAddress address = botAddressRepository.findOneByBot(bot);
+    BotDto bot = botService.findById(2L);
+    BotAddressDto address = bot.getAddress();
     address.setPort(EDIT_PORT);
-    BotAddress updated = botAddressRepository.save(address);
-    Assert.assertEquals(EDIT_PORT, updated.getPort());
+    BotDto updated = botService.updateBot(2L, bot);
+    Assert.assertEquals(EDIT_PORT, updated.getAddress().getPort());
   }
 
-  @Test(expected = NoSuchElementException.class)
+  @Test(expected = ResponseStatusException.class)
   public void deleteBot() {
-    Bot toDelete = new Bot();
+    BotDto toDelete = new BotDto();
     toDelete.setAvailable(true);
-    toDelete.setCreated(new Date());
     toDelete.setName("To delete bot");
     toDelete.setDescription("A bot created to delete");
     toDelete.setShowTo("ADMIN");
-    Bot saved = botRepository.save(toDelete);
+    BotDto saved = botService.createBot(toDelete);
     Assert.assertTrue(saved.getId() > 0);
-    botRepository.deleteById(saved.getId());
-    botRepository.findById(saved.getId()).get();
+    botService.delete(saved.getId());
+    botService.findById(saved.getId());
   }
 
 }

@@ -46,7 +46,7 @@ public class BranchController {
 
   @PutMapping("/{id}")
   @ResponseBody
-  public GenericResponse updateBranch(HttpServletRequest httpReq, @PathVariable Long id,
+  public BranchDto updateBranch(HttpServletRequest httpReq, @PathVariable Long id,
       @RequestBody BranchDto req) {
     return branchService.updateBranch(id, req);
   }

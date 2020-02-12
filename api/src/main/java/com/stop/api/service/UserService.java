@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserService {
@@ -78,8 +80,7 @@ public class UserService {
     GenericResponse response = new GenericResponse();
     User user = userRepository.findById(id).get();
     if (user == null) {
-      response.setMessage("KO");
-      return response;
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
     }
     userRepository.deleteById(id);
     response.setMessage("OK");
@@ -93,17 +94,15 @@ public class UserService {
    * @param req the user to update
    * @return OK if the user was updated successfully
    */
-  public GenericResponse updateUser(Long id, UserDto req) {
-    GenericResponse response = new GenericResponse();
+  public UserDto updateUser(Long id, UserDto req) {
     try {
       User user = userRepository.findById(id).get();
       user.setAdmin(req.isAdmin());
-      userRepository.save(user);
-      response.setMessage("OK");
+      User updated = userRepository.save(user);
+      return convertUserToDto(updated);
     } catch (NoSuchElementException e) {
-      response.setMessage("KO");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.", e);
     }
-    return response;
   }
 
   /**
@@ -117,7 +116,7 @@ public class UserService {
     if (user != null) {
       return convertUserToDto(user);
     }
-    return null;
+    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
   }
 
   /**
@@ -133,20 +132,18 @@ public class UserService {
       User user = userRepository.findOneByUid(uid);
       Branch branch = branchRepository.findOneByCode(code);
       if (branch == null) {
-        response.setMessage("Invalid code");
-        return response;
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid branch code.");
       }
       if (user.getBranches().contains(branch)) {
-        response.setMessage("This code already exists.");
-        return response;
+        throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "This code already exists.");
       }
       user.getBranches().add(branch);
       userRepository.save(user);
       branch.getUsers().add(user);
       branchRepository.save(branch);
       response.setMessage("OK");
-    } catch (NoSuchElementException e) {
-      response.setMessage("User not found");
+    } catch (NoSuchElementException ex) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.", ex);
     }
     return response;
   }
@@ -159,6 +156,9 @@ public class UserService {
    */
   public List<UserDto> findByBranch(Long branchId) {
     Branch branch = branchRepository.findById(branchId).get();
+    if (branch == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Branch not found.");
+    }
     Set<User> users = branch.getUsers();
     List<UserDto> response = new ArrayList<>();
     for (User user : users) {
@@ -178,6 +178,21 @@ public class UserService {
     if (user != null) {
       return convertUserToDto(user);
     }
-    return null;
+    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+  }
+
+  /**
+   * Retrieve a user given its id.
+   * 
+   * @param id user id
+   * @return user if found
+   */
+  public UserDto findById(long id) {
+    try {
+      User user = userRepository.findById(id).get();
+      return convertUserToDto(user);
+    } catch (NoSuchElementException ex) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.", ex);
+    }
   }
 }
