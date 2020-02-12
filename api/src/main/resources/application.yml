@@ -47,7 +47,7 @@ spring.profiles: development-mysql
 
 spring:
   datasource:
-    driverClassName: com.mysql.jdbc.Driver
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: root
     password: manager1
     platform: mysql
@@ -56,7 +56,7 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/stop_backend?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     validationQuery: SELECT 1
   jpa:
-    hibernate.ddl-auto: create
+    hibernate.ddl-auto: update
     show-sql: false
     database: MYSQL
     database-platform: org.hibernate.dialect.MySQL8Dialect

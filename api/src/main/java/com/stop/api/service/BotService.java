@@ -126,13 +126,13 @@ public class BotService {
    */
   @Transactional
   public GenericResponse delete(Long id) {
-    GenericResponse response = new GenericResponse();
     Bot bot = botRepository.findById(id).get();
     if (bot == null) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bot not found.");
     }
     botAddressRepository.deleteByBot(bot);
     botRepository.deleteById(id);
+    GenericResponse response = new GenericResponse();
     response.setMessage("OK");
     return response;
   }
