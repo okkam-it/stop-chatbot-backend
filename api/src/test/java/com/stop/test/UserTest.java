@@ -1,42 +1,54 @@
 package com.stop.test;
 
-import com.stop.model.Branch;
-import com.stop.model.User;
-import java.util.Date;
-import java.util.Optional;
+import com.stop.dto.BranchDto;
+import com.stop.dto.UserDto;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class UserTest extends BaseRepositoryTest {
 
   @Test
-  public void getUserTest() {
-    Optional<User> user = userRepository.findById(1L);
+  public void getUsers() {
+    List<UserDto> users = userService.listAllUsers();
+    Assert.assertTrue(users.size() > 0);
+  }
+
+  @Test
+  public void getUserByIdTest() {
+    UserDto user = userService.findById(1L);
+    Assert.assertNotNull(user);
+  }
+
+  @Test
+  public void getUserByUidTest() {
+    UserDto user = userService.findById(1L);
+    Assert.assertNotNull(user);
+    UserDto uidUser = userService.findByUid(user.getUid());
+    Assert.assertNotNull(uidUser);
+  }
+
+  @Test
+  public void getUserByNameTest() {
+    UserDto user = userService.findByName("admin");
     Assert.assertNotNull(user);
   }
 
   @Test
   public void createUser() {
-    User user = new User();
+    UserDto user = new UserDto();
     user.setUsername("user");
     user.setAdmin(false);
-    user.setCreated(new Date());
-    User created = userRepository.save(user);
+    UserDto created = userService.createUser(user);
     Assert.assertTrue(created.getId() > 0);
-  }
-
-  // TODO fix
-  public void findByName() {
-    User user = userRepository.findOneByUsername("admin");
-    Assert.assertNotNull(user);
   }
 
   @Test
   public void addBranchToUser() {
-    User user = userRepository.findById(1L).get();
-    Branch branch = branchRepository.findById(4L).get();
-    user.getBranches().add(branch);
-    User saved = userRepository.save(user);
-    Assert.assertEquals(1, saved.getBranches().size());
+    UserDto user = userService.findById(1L);
+    BranchDto branch = branchService.findById(4L);
+    userService.addBranchToUser(user.getUid(), branch.getCode());
+    List<BranchDto> branches = branchService.findByUser(user.getId());
+    Assert.assertEquals(1, branches.size());
   }
 }

@@ -1,17 +1,15 @@
 package com.stop.test;
 
 import com.stop.StopBackendApplication;
-import com.stop.model.Bot;
-import com.stop.model.BotAddress;
-import com.stop.model.Branch;
-import com.stop.model.User;
-import com.stop.repository.BotAddressRepository;
-import com.stop.repository.BotRepository;
-import com.stop.repository.BranchRepository;
-import com.stop.repository.ChatRepository;
-import com.stop.repository.ChatRoomRepository;
-import com.stop.repository.UserRepository;
-import java.util.Date;
+import com.stop.api.service.BotService;
+import com.stop.api.service.BranchService;
+import com.stop.api.service.ChatRoomService;
+import com.stop.api.service.UserService;
+import com.stop.api.utils.StopUtils;
+import com.stop.dto.BotAddressDto;
+import com.stop.dto.BotDto;
+import com.stop.dto.BranchDto;
+import com.stop.dto.UserDto;
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import org.junit.runner.RunWith;
@@ -25,50 +23,42 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public abstract class BaseRepositoryTest {
 
   @Autowired
-  protected BotRepository botRepository;
+  protected BotService botService;
 
   @Autowired
-  protected BotAddressRepository botAddressRepository;
+  protected UserService userService;
 
   @Autowired
-  protected UserRepository userRepository;
+  protected BranchService branchService;
 
   @Autowired
-  protected BranchRepository branchRepository;
-
-  @Autowired
-  protected ChatRoomRepository chatRoomRepository;
-
-  @Autowired
-  protected ChatRepository chatRepository;
+  protected ChatRoomService chatRoomService;
 
   @PostConstruct
   public void init() {
-    User user = new User();
+    UserDto user = new UserDto();
     user.setUsername("admin");
     user.setAdmin(true);
-    user.setCreated(new Date());
-    userRepository.save(user);
-    
-    Bot bot = new Bot();
+    user.setUid(StopUtils.generateCode());
+    userService.createUser(user);
+
+    BotDto bot = new BotDto();
     bot.setAvailable(true);
-    bot.setCreated(new Date());
     bot.setName("Init bot");
     bot.setDescription("A bot on initial data");
     bot.setShowTo("ADMIN");
-    botRepository.save(bot);
-    
-    BotAddress address=new BotAddress();
+
+    BotAddressDto address = new BotAddressDto();
     address.setIp("localhost");
     address.setPort(5000);
-    address.setApiPath("chatstop/bot_request");
-    address.setBot(bot);
-    botAddressRepository.save(address);
-    
-    Branch branch = new Branch();
-    branch.setCreated(new Date());
+    address.setPath("chatstop/bot_request");
+    bot.setAddress(address);
+    botService.createBot(bot);
+
+    BranchDto branch = new BranchDto();
     branch.setName("Init branch");
-    branchRepository.save(branch);
+    branch.setCode(StopUtils.generateCode());
+    branchService.createBranch(branch);
   }
 
 }

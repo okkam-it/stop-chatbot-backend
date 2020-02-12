@@ -21,7 +21,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ChatRoomService {
@@ -63,6 +65,9 @@ public class ChatRoomService {
    */
   public List<ChatRoomDto> findByBot(Long botId) {
     Bot bot = botRepository.findById(botId).get();
+    if (bot == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bot not found.");
+    }
     List<ChatRoomDto> result = new ArrayList<ChatRoomDto>();
     for (ChatRoom chatRoom : bot.getChatRoom()) {
       result.add(convertChatRoomToDto(chatRoom));
@@ -81,7 +86,7 @@ public class ChatRoomService {
       ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).get();
       return convertChatRoomToDto(chatRoom);
     } catch (NoSuchElementException e) {
-      return null;
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ChatRoom not found.");
     }
   }
 
@@ -152,7 +157,7 @@ public class ChatRoomService {
       List<ChatDto> response = new ArrayList<>();
       ChatRoom chatRoom = chatRoomRepository.findById(id).get();
       if (chatRoom != null) {
-        // get the last *limit* chats 
+        // get the last *limit* chats
         PageRequest page = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "sendDate"));
         List<Chat> chats = chatRepository.findAllByChatRoom(chatRoom, page);
         for (Chat chat : chats) {
@@ -185,6 +190,9 @@ public class ChatRoomService {
   @Transactional
   public void saveChat(Long chatRoomId, ChatDto message) {
     ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).get();
+    if (chatRoom == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ChatRoom not found.");
+    }
     Chat chat = new Chat();
     chat.setChatRoom(chatRoom);
     chat.setMessage(message.getMessage());
@@ -192,9 +200,11 @@ public class ChatRoomService {
     chat.setType(message.getType());
     chat.setUser(message.getUser());
     Chat saved = chatRepository.save(chat);
+    if (chatRoom.getChats() == null) {
+      chatRoom.setChats(new ArrayList<>());
+    }
     chatRoom.getChats().add(saved);
     chatRoomRepository.save(chatRoom);
-
   }
 
 }

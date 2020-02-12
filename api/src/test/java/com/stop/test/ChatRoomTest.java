@@ -1,41 +1,30 @@
 package com.stop.test;
 
-import com.stop.model.Bot;
-import com.stop.model.Branch;
-import com.stop.model.Chat;
-import com.stop.model.ChatRoom;
-import com.stop.model.User;
+import com.stop.dto.ChatDto;
+import com.stop.dto.ChatRoomDto;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 public class ChatRoomTest extends BaseRepositoryTest {
 
   @Test
   public void createChatroom() {
-    User user = userRepository.findById(1L).get();
-    Bot bot = botRepository.findById(2L).get();
-    Branch branch = branchRepository.findById(4L).get();
-    ChatRoom chatRoom = new ChatRoom();
-    chatRoom.setBot(bot);
-    chatRoom.setBranch(branch);
-    chatRoom.setUser(user);
-    chatRoom.setCreated(new Date());
-    ChatRoom saved = chatRoomRepository.save(chatRoom);
+    ChatRoomDto chatRoom = new ChatRoomDto();
+    chatRoom.setBotId(2L);
+    chatRoom.setBranchId(4L);
+    chatRoom.setUserId(1L);
+    ChatRoomDto saved = chatRoomService.createChatRoom(chatRoom);
     Assert.assertTrue(saved.getId() > 0);
 
-    Chat chat = new Chat();
-    chat.setChatRoom(saved);
+    ChatDto chat = new ChatDto();
     chat.setMessage("Hello!");
-    chat.setSendDate(new Date());
     chat.setType("newmsg");
-    chatRepository.save(chat);
+    chat.setSendDate(new Date());
+    chatRoomService.saveChat(saved.getId(), chat);
 
-    PageRequest page = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "sendDate"));
-    List<Chat> chats = chatRepository.findAllByChatRoom(saved, page);
+    List<ChatDto> chats = chatRoomService.findChats(saved.getId(), 10);
     Assert.assertEquals(1, chats.size());
   }
 

@@ -48,7 +48,7 @@ public class UserController {
   public List<UserDto> findByBranch(@PathVariable Long branchId) {
     return userService.findByBranch(branchId);
   }
-  
+
   @GetMapping("/find/byuid/{uid}")
   @ResponseBody
   public UserDto findByUid(@PathVariable String uid) {
@@ -64,7 +64,7 @@ public class UserController {
 
   @PutMapping("/{id}")
   @ResponseBody
-  public GenericResponse updateBot(HttpServletRequest httpReq, @PathVariable Long id,
+  public UserDto updateUser(HttpServletRequest httpReq, @PathVariable Long id,
       @RequestBody UserDto req) {
     return userService.updateUser(id, req);
   }
@@ -79,8 +79,7 @@ public class UserController {
   @ResponseBody
   public GenericResponse addBranchToUser(HttpServletRequest httpReq, @PathVariable String uid,
       @RequestParam String code) {
-    GenericResponse resp = userService.addBranchToUser(uid, code);
-    return resp;
+    return userService.addBranchToUser(uid, code);
   }
 
 }

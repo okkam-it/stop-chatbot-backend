@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class BranchService {
@@ -91,18 +93,16 @@ public class BranchService {
    * @param req update request
    * @return OK if the branch was updated successfully
    */
-  public GenericResponse updateBranch(Long id, BranchDto req) {
-    GenericResponse response = new GenericResponse();
+  public BranchDto updateBranch(Long id, BranchDto req) {
     try {
       Branch branch = branchRepository.findById(id).get();
       branch.setName(req.getName());
       updateBranchBots(branch, req);
-      branchRepository.save(branch);
-      response.setMessage("OK");
+      Branch updated = branchRepository.save(branch);
+      return convertBranchToDto(updated);
     } catch (NoSuchElementException e) {
-      response.setMessage("KO");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Branch not found.");
     }
-    return response;
   }
 
   /**
@@ -115,8 +115,7 @@ public class BranchService {
     GenericResponse response = new GenericResponse();
     Branch branch = branchRepository.findById(id).get();
     if (branch == null) {
-      response.setMessage("KO");
-      return response;
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Branch not found.");
     }
     branchRepository.deleteById(id);
     response.setMessage("OK");
@@ -132,7 +131,7 @@ public class BranchService {
   public List<BranchDto> findByUser(Long userId) {
     User user = userRepository.findById(userId).get();
     if (user == null) {
-      return new ArrayList<>();
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
     }
     Set<Branch> branches = user.getBranches();
     List<BranchDto> result = new ArrayList<>();
@@ -153,7 +152,7 @@ public class BranchService {
       Branch branch = branchRepository.findById(id).get();
       return convertBranchToDto(branch);
     } catch (NoSuchElementException e) {
-      return null;
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Branch not found.", e);
     }
   }
 

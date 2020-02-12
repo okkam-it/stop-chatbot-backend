@@ -7,7 +7,7 @@ public class BotDto {
   private String description;
   private String showTo;
   private boolean available;
-  private BotAddressDto address;
+  private BotAddressDto address = new BotAddressDto();
 
   public Long getId() {
     return id;
