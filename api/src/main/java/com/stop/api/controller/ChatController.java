@@ -36,7 +36,8 @@ public class ChatController {
    */
   @MessageMapping("/bot/request/{chatRoomId}")
   @SendTo("/bot/response")
-  public ChatDto forwardMessage(@DestinationVariable Long chatRoomId, ChatDto message) throws Exception {
+  public ChatDto forwardMessage(@DestinationVariable Long chatRoomId, ChatDto message)
+      throws Exception {
     LOG.debug("Websocket called");
     ChatRoomDto chatRoomDto = chatRoomService.findById(chatRoomId);
     if (chatRoomDto != null) {
