@@ -29,13 +29,24 @@ public class BranchController {
   @Autowired
   private BranchService branchService;
 
-  // GET ALL
+  /**
+   * Retrieve all configured branches.
+   * 
+   * @return all branches
+   */
   @GetMapping
   @ResponseBody
   public List<BranchDto> listBranches() {
     return branchService.listAllBranches();
   }
 
+  /**
+   * Create a new branch.
+   * 
+   * @param httpReq http request
+   * @param req branch to create
+   * @return branch saved
+   */
   @PostMapping
   @ResponseBody
   public ResponseEntity<BranchDto> createBranch(HttpServletRequest httpReq,
@@ -44,25 +55,49 @@ public class BranchController {
     return ResponseEntity.created(ResponseUtils.getCreationUri(httpReq, resp.getId())).body(resp);
   }
 
+  /**
+   * Update an existing branch.
+   * 
+   * @param id id of the branch to update
+   * @param req branch to update
+   * @return updated branch
+   */
   @PutMapping("/{id}")
   @ResponseBody
-  public BranchDto updateBranch(HttpServletRequest httpReq, @PathVariable Long id,
-      @RequestBody BranchDto req) {
+  public BranchDto updateBranch(@PathVariable Long id, @RequestBody BranchDto req) {
     return branchService.updateBranch(id, req);
   }
 
+  /**
+   * Delete an existing branch.
+   * 
+   * @param id id of the branch to delete
+   * @return delete response
+   */
   @DeleteMapping("/{id}")
   @ResponseBody
   public GenericResponse deleteBranch(@PathVariable Long id) {
     return branchService.delete(id);
   }
 
+  /**
+   * Find all branches associated to an user.
+   * 
+   * @param userId user id
+   * @return list of branches
+   */
   @GetMapping("/find/byuser/{userId}")
   @ResponseBody
   public List<BranchDto> findByUser(@PathVariable Long userId) {
     return branchService.findByUser(userId);
   }
-  
+
+  /**
+   * Find a branch by id.
+   * 
+   * @param id branch id
+   * @return branch
+   */
   @GetMapping("/find/byid/{id}")
   @ResponseBody
   public BranchDto findById(@PathVariable Long id) {
