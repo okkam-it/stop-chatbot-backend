@@ -28,13 +28,25 @@ public class ChatRoomController {
   @Autowired
   private ChatRoomService chatRoomService;
 
-  // GET ALL
+  /**
+   * Retrieve all configured chat rooms.
+   * 
+   * @return all chat rooms
+   */
   @GetMapping
   @ResponseBody
-  public List<ChatRoomDto> listUsers() {
+  public List<ChatRoomDto> listChatRooms() {
     return chatRoomService.listAllChatRooms();
   }
 
+  /**
+   * Find a chatroom given an user, branch and bot.
+   * 
+   * @param userId user id
+   * @param branchId branch id
+   * @param botId bot id
+   * @return a chat room for the given parameters
+   */
   @GetMapping("/find/{userId}/{branchId}/{botId}")
   @ResponseBody
   public ChatRoomDto findChatRoom(@PathVariable Long userId, @PathVariable Long branchId,
@@ -42,12 +54,25 @@ public class ChatRoomController {
     return chatRoomService.findChatRoom(userId, branchId, botId);
   }
 
+  /**
+   * Find all chatrooms for a bot.
+   * 
+   * @param botId bot id
+   * @return list of chatrooms
+   */
   @GetMapping("/find/bybot/{botId}")
   @ResponseBody
   public List<ChatRoomDto> findByBot(@PathVariable Long botId) {
     return chatRoomService.findByBot(botId);
   }
 
+  /**
+   * Create a new chatroom.
+   * 
+   * @param httpReq http request
+   * @param req chatroom to create
+   * @return created chatroom
+   */
   @PostMapping
   @ResponseBody
   public ResponseEntity<ChatRoomDto> createChatRoom(HttpServletRequest httpReq,
@@ -56,6 +81,13 @@ public class ChatRoomController {
     return ResponseEntity.created(ResponseUtils.getCreationUri(httpReq, resp.getId())).body(resp);
   }
 
+  /**
+   * Retrieve chatroom chats.
+   * 
+   * @param id chatroom id
+   * @param limit limit of the chats
+   * @return list of the last *limit* chats
+   */
   @GetMapping("/{id}/chats")
   @ResponseBody
   public List<ChatDto> findChats(@PathVariable Long id, @RequestParam Integer limit) {
