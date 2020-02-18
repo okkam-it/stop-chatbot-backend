@@ -1,9 +1,12 @@
 package com.stop.api.service;
 
+import com.stop.dto.UserBioDataDto;
 import com.stop.dto.UserDto;
 import com.stop.model.Branch;
 import com.stop.model.User;
+import com.stop.model.UserBioData;
 import com.stop.repository.BranchRepository;
+import com.stop.repository.UserBioDataRepository;
 import com.stop.repository.UserRepository;
 import com.stop.response.GenericResponse;
 import java.util.ArrayList;
@@ -21,6 +24,9 @@ public class UserService {
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  private UserBioDataRepository userBioDataRepository;
 
   @Autowired
   private BranchRepository branchRepository;
@@ -194,5 +200,52 @@ public class UserService {
     } catch (NoSuchElementException ex) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.", ex);
     }
+  }
+
+  /**
+   * Save a new bio data retrieved from a device.
+   * 
+   * @param userId user id
+   * @param userBioData data to store
+   */
+  public void saveUserBioData(long userId, UserBioDataDto userBioData) {
+    try {
+      User user = userRepository.findById(userId).get();
+      UserBioData bioData = new UserBioData();
+      bioData.setHeartRate(userBioData.getHeartRate());
+      bioData.setCreated(new Date());
+      bioData.setUser(user);
+      userBioDataRepository.save(bioData);
+      user.getBioData().add(bioData);
+      userRepository.save(user);
+    } catch (NoSuchElementException ex) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.", ex);
+    }
+  }
+
+  /**
+   * Retrieve all user bio data stored.
+   * 
+   * @param userId user id
+   * @return a list with all user bio data
+   */
+  public List<UserBioDataDto> findAllUserBioData(long userId) {
+    try {
+      User user = userRepository.findById(userId).get();
+      List<UserBioDataDto> datas = new ArrayList<>();
+      for (UserBioData data : user.getBioData()) {
+        datas.add(convertBioDataToDto(data));
+      }
+      return datas;
+    } catch (NoSuchElementException ex) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.", ex);
+    }
+  }
+
+  private UserBioDataDto convertBioDataToDto(UserBioData data) {
+    UserBioDataDto bioDataDto = new UserBioDataDto();
+    bioDataDto.setHeartRate(data.getHeartRate());
+    bioDataDto.setRelevationDate(data.getCreated());
+    return bioDataDto;
   }
 }

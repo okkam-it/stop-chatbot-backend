@@ -24,6 +24,9 @@ public class User extends AbstractStopResource {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<ChatRoom> chatRoom = new ArrayList<>();
+  
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<UserBioData> bioData = new ArrayList<>();
 
   public boolean isAdmin() {
     return admin;
@@ -71,6 +74,14 @@ public class User extends AbstractStopResource {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public List<UserBioData> getBioData() {
+    return bioData;
+  }
+
+  public void setBioData(List<UserBioData> bioData) {
+    this.bioData = bioData;
   }
 
 }
