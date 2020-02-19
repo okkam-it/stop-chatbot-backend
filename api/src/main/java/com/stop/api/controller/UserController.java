@@ -4,6 +4,7 @@ import static com.stop.api.utils.StopConstants.USER_SERVICE_BASE_PATH;
 
 import com.stop.api.service.UserService;
 import com.stop.api.utils.ResponseUtils;
+import com.stop.dto.UserBioDataDto;
 import com.stop.dto.UserDto;
 import com.stop.response.GenericResponse;
 import java.util.List;
@@ -127,6 +128,33 @@ public class UserController {
   @ResponseBody
   public GenericResponse addBranchToUser(@PathVariable String uid, @RequestParam String code) {
     return userService.addBranchToUser(uid, code);
+  }
+
+  /**
+   * Save user bio data.
+   * 
+   * @param id user id
+   * @param userBioData data to store
+   * @return OK if the operation was successful
+   */
+  @PostMapping("/{id}/biodata")
+  @ResponseBody
+  public GenericResponse saveUserBioData(@PathVariable Long id,
+      @RequestBody UserBioDataDto userBioData) {
+    userService.saveUserBioData(id, userBioData);
+    return new GenericResponse(400, "OK");
+  }
+
+  /**
+   * Retrieve all stored user bio data.
+   * 
+   * @param id user id
+   * @return a list with all user bio data stored
+   */
+  @GetMapping("/{id}/biodata")
+  @ResponseBody
+  public List<UserBioDataDto> findAllUserBioData(@PathVariable Long id) {
+    return userService.findAllUserBioData(id);
   }
 
 }

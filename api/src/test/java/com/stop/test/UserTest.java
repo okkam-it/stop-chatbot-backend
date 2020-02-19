@@ -1,6 +1,7 @@
 package com.stop.test;
 
 import com.stop.dto.BranchDto;
+import com.stop.dto.UserBioDataDto;
 import com.stop.dto.UserDto;
 import java.util.List;
 import org.junit.Assert;
@@ -41,6 +42,15 @@ public class UserTest extends BaseRepositoryTest {
     user.setAdmin(false);
     UserDto created = userService.createUser(user);
     Assert.assertTrue(created.getId() > 0);
+  }
+
+  @Test
+  public void createUserBioData() {
+    UserBioDataDto bioData = new UserBioDataDto();
+    bioData.setHeartRate(60);
+    userService.saveUserBioData(1L, bioData);
+    List<UserBioDataDto> datas = userService.findAllUserBioData(1L);
+    Assert.assertEquals(1, datas.size());
   }
 
   @Test
