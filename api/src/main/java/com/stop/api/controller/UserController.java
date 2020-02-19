@@ -153,7 +153,7 @@ public class UserController {
    */
   @GetMapping("/{id}/biodata")
   @ResponseBody
-  public List<UserBioDataDto> findByUid(@PathVariable Long id) {
+  public List<UserBioDataDto> findAllUserBioData(@PathVariable Long id) {
     return userService.findAllUserBioData(id);
   }
 

@@ -1,11 +1,13 @@
 package com.stop.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
-public class UserBioDataDto {
-  
+public class UserBioDataDto implements Comparable<UserBioDataDto> {
+
+  @JsonProperty("heart_rate")
   private int heartRate;
-  private Date relevationDate;
+  private Date date;
 
   public int getHeartRate() {
     return heartRate;
@@ -14,13 +16,18 @@ public class UserBioDataDto {
   public void setHeartRate(int heartRate) {
     this.heartRate = heartRate;
   }
-
-  public Date getRelevationDate() {
-    return relevationDate;
+  
+  public Date getDate() {
+    return date;
   }
 
-  public void setRelevationDate(Date relevationDate) {
-    this.relevationDate = relevationDate;
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  @Override
+  public int compareTo(UserBioDataDto o) {
+    return date.compareTo(o.getDate());
   }
 
 }

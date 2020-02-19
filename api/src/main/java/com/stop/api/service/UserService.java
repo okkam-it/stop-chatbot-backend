@@ -10,6 +10,7 @@ import com.stop.repository.UserBioDataRepository;
 import com.stop.repository.UserRepository;
 import com.stop.response.GenericResponse;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -213,7 +214,11 @@ public class UserService {
       User user = userRepository.findById(userId).get();
       UserBioData bioData = new UserBioData();
       bioData.setHeartRate(userBioData.getHeartRate());
-      bioData.setCreated(new Date());
+      if (userBioData.getDate() != null) {
+        bioData.setCreated(userBioData.getDate());
+      } else {
+        bioData.setCreated(new Date());
+      }
       bioData.setUser(user);
       userBioDataRepository.save(bioData);
       user.getBioData().add(bioData);
@@ -236,6 +241,7 @@ public class UserService {
       for (UserBioData data : user.getBioData()) {
         datas.add(convertBioDataToDto(data));
       }
+      Collections.sort(datas);
       return datas;
     } catch (NoSuchElementException ex) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.", ex);
@@ -245,7 +251,7 @@ public class UserService {
   private UserBioDataDto convertBioDataToDto(UserBioData data) {
     UserBioDataDto bioDataDto = new UserBioDataDto();
     bioDataDto.setHeartRate(data.getHeartRate());
-    bioDataDto.setRelevationDate(data.getCreated());
+    bioDataDto.setDate(data.getCreated());
     return bioDataDto;
   }
 }
