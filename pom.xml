@@ -18,7 +18,7 @@
 		<h2.version>1.4.189</h2.version>
 		<mysql.version>8.0.19</mysql.version>
 		<swagger.version>2.9.2</swagger.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 	</properties>
 
 	<dependencyManagement>
