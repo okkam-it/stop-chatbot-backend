@@ -15,7 +15,7 @@
 		<spring.boot.version>2.2.2.RELEASE</spring.boot.version>
 		<commons.lang3.version>3.9</commons.lang3.version>
 		<httpclient.version>4.5.3</httpclient.version>
-		<h2.version>1.4.189</h2.version>
+		<h2.version>2.1.210</h2.version>
 		<mysql.version>8.0.19</mysql.version>
 		<swagger.version>2.9.2</swagger.version>
 		<junit.version>4.12</junit.version>
